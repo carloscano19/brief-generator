@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { generateBrief } from '../../services/llm';
 import { getModelById } from '../../config/models';
-import { KEYWORD_GROUP_LABELS, KEYWORD_GROUP_ICONS, VOLUME_LABELS, AppError } from '../../types';
-import type { KeywordProposal } from '../../types';
+import { KEYWORD_GROUP_LABELS, KEYWORD_GROUP_ICONS, VOLUME_LABELS } from '../../types';
+import type { AppError, KeywordProposal } from '../../types';
 
 const GROUP_COLORS: Record<KeywordProposal['group'], { bg: string; color: string }> = {
     semantic: { bg: 'var(--blue-soft)', color: 'var(--blue)' },
@@ -15,7 +15,7 @@ const GROUP_COLORS: Record<KeywordProposal['group'], { bg: string; color: string
 export const KeywordSelection: React.FC = () => {
     const {
         keywordProposals, toggleKeyword, selectAllKeywords, deselectAllKeywords,
-        selectGroup, deselectGroup, config, prevStep, setStep,
+        selectGroup, deselectGroup, config, prevStep,
         setBrief, setLoading, setStreaming, setError, setStep: goToStep,
         isLoading, error, addToHistory
     } = useAppStore();

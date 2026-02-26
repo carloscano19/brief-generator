@@ -21,5 +21,5 @@ export async function exportToPdf(
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
     };
 
-    await html2pdf().set(opt).from(contentElement).save();
+    await (html2pdf as any)().set(opt).from(contentElement).save();
 }

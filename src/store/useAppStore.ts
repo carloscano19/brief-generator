@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AppState, BriefConfig, KeywordProposal, HistoryEntry } from '../types';
+import type { AppState, BriefConfig, HistoryEntry } from '../types';
 
 const DEFAULT_CONFIG: BriefConfig = {
     title: '',

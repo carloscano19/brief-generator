@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { generateKeywordsWithSeeds } from '../../services/llm';
 import { getModelById } from '../../config/models';
-import { AppError } from '../../types';
+import type { AppError } from '../../types';
 
 export const SeedKeywords: React.FC = () => {
     const {
