@@ -1,0 +1,117 @@
+export type LLMModel = {
+  provider: 'Anthropic' | 'OpenAI' | 'Google';
+  label: string;
+  id: string;
+  apiKeyPrefix: string;
+  docsUrl: string;
+};
+
+export type KeywordProposal = {
+  text: string;
+  group: 'semantic' | 'synonyms' | 'volume' | 'llm';
+  volume: 'low' | 'medium' | 'high';
+  rationale: string;
+  selected: boolean;
+};
+
+export type BriefConfig = {
+  title: string;
+  language: string;
+  modelId: string;
+  provider: string;
+  apiKey: string;
+  saveApiKey: boolean;
+};
+
+export type HistoryEntry = {
+  id: string;
+  title: string;
+  model: string;
+  provider: string;
+  language: string;
+  timestamp: string;
+  content: string;
+  keywordCount: number;
+};
+
+export type AppError = {
+  type: 'auth' | 'rate_limit' | 'server' | 'network' | 'parse' | 'validation';
+  message: string;
+  action?: string;
+  actionUrl?: string;
+};
+
+export type AppState = {
+  currentStep: number;
+  config: BriefConfig;
+  seedKeywords: string[];
+  keywordProposals: KeywordProposal[];
+  brief: string;
+  history: HistoryEntry[];
+  isLoading: boolean;
+  isStreaming: boolean;
+  error: AppError | null;
+  showHistory: boolean;
+
+  // Actions
+  setStep: (step: number) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+  updateConfig: (partial: Partial<BriefConfig>) => void;
+  addSeedKeyword: (keyword: string) => void;
+  removeSeedKeyword: (keyword: string) => void;
+  setKeywordProposals: (proposals: KeywordProposal[]) => void;
+  toggleKeyword: (index: number) => void;
+  selectAllKeywords: () => void;
+  deselectAllKeywords: () => void;
+  selectGroup: (group: KeywordProposal['group']) => void;
+  deselectGroup: (group: KeywordProposal['group']) => void;
+  getSelectedKeywords: () => KeywordProposal[];
+  setBrief: (brief: string) => void;
+  appendBrief: (chunk: string) => void;
+  setLoading: (loading: boolean) => void;
+  setStreaming: (streaming: boolean) => void;
+  setError: (error: AppError | null) => void;
+  addToHistory: (entry: HistoryEntry) => void;
+  removeFromHistory: (id: string) => void;
+  loadFromHistory: (id: string) => void;
+  setShowHistory: (show: boolean) => void;
+  resetSession: () => void;
+};
+
+export const KEYWORD_GROUP_LABELS: Record<KeywordProposal['group'], string> = {
+  semantic: 'Semantic',
+  synonyms: 'Synonyms & Variants',
+  volume: 'High Volume',
+  llm: 'LLM / Long Tail',
+};
+
+export const KEYWORD_GROUP_ICONS: Record<KeywordProposal['group'], string> = {
+  semantic: '📚',
+  synonyms: '🔤',
+  volume: '📈',
+  llm: '🤖',
+};
+
+export const VOLUME_LABELS: Record<string, string> = {
+  low: '< 500/mo',
+  medium: '500–2K/mo',
+  high: '> 2K/mo',
+};
+
+export const LANGUAGES = [
+  { value: 'English', label: 'English' },
+  { value: 'Spanish', label: 'Español' },
+  { value: 'Portuguese', label: 'Português' },
+  { value: 'French', label: 'Français' },
+  { value: 'German', label: 'Deutsch' },
+  { value: 'Italian', label: 'Italiano' },
+  { value: 'Dutch', label: 'Nederlands' },
+  { value: 'Polish', label: 'Polski' },
+  { value: 'Japanese', label: '日本語' },
+  { value: 'Korean', label: '한국어' },
+  { value: 'Chinese', label: '中文' },
+  { value: 'Arabic', label: 'العربية' },
+  { value: 'Turkish', label: 'Türkçe' },
+  { value: 'Russian', label: 'Русский' },
+];
