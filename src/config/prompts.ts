@@ -1,17 +1,27 @@
-export const KEYWORD_EXPANSION_PROMPT = `You are an expert in SEO and GEO (Generative Engine Optimization). Your task is to expand a list of seed keywords for an article titled '{TITLE}' written in {LANGUAGE}.
+export const KEYWORD_EXPANSION_PROMPT = `You are an elite SEO and GEO (Generative Engine Optimization) strategist. Your goal is to map the entire search and conversational landscape for an article titled '{TITLE}' in {LANGUAGE}.
 
-From the following seed keywords: {SEED_KEYWORDS}
+Using the seed keywords as a starting point: {SEED_KEYWORDS}
 
-Generate exactly between 15 and 20 keyword proposals organized in 4 groups:
-1. SEMANTIC (4-5): keywords from the same semantic field and thematic domain.
-2. SYNONYMS AND VARIANTS (3-4): alternative forms, plurals, morphological variants.
-3. HIGH VOLUME (3-4): terms with high estimated demand, head or mid-tail.
-4. LLM / LONG TAIL (4-6): conversational questions that users ask to ChatGPT, Perplexity, or Google Gemini. Must be in question format reflecting conversational intent.
+Generate EXACTLY 40 unique keyword proposals (10 per category) applying a deep "Topic Coverage" logic:
 
-For each keyword include: keyword text, group, estimated monthly volume (low <500, medium 500-2000, high >2000), and 1 sentence rationale.
-Respond in JSON with the schema: {"keywords": [{"text": "", "group": "semantic|synonyms|volume|llm", "volume": "low|medium|high", "rationale": ""}]}
-IMPORTANT: Respond ONLY with valid JSON. No markdown, no backticks, no explanations before or after.
-Generate all keywords in the language: {LANGUAGE}.`;
+1. SEMANTIC (10): Focus on LSI (Latent Semantic Indexing) and related entities. Don't just repeat seeds; find the technical, adjacent, and "topical authority" terms that an expert article MUST cover.
+2. SYNONYMS & VARIANTS (10): Natural language variations, common industry jargon, different grammatical forms (search intent remains the same but wording changes).
+3. HIGH VOLUME (10): Broad, highly competitive terms that drive traffic. Head and mid-tail terms that define the category.
+4. LLM / GEO LONG TAIL (10): Conversational questions, "Zero-Click" intents, and trigger phrases for LLMs (ChatGPT, Gemini, Perplexity). Format as specific questions or complex long-tail prompts reflecting deep user intent.
+
+For each keyword include:
+- TEXT: The specific keyword or phrase.
+- GROUP: 'semantic', 'synonyms', 'volume', or 'llm'.
+- VOLUME: 'low' (<500), 'medium' (500-2000), or 'high' (>2000) based on typical industry demand for this niche.
+- RATIONALE: A 1-sentence technical explanation of WHY this term is vital for SEO/GEO authority.
+
+Response Format:
+Respond ONLY with valid JSON following this schema: {"keywords": [{"text": "", "group": "semantic|synonyms|volume|llm", "volume": "low|medium|high", "rationale": ""}]}
+
+IMPORTANT:
+- Language: {LANGUAGE}.
+- Return EXACTLY 40 keywords.
+- No markdown, no backticks, no text before or after the JSON.`;
 
 export const BRIEF_GENERATION_PROMPT = `You are an expert in SEO, GEO, and editorial content strategy. Generate a complete and detailed content brief for the following article:
 
