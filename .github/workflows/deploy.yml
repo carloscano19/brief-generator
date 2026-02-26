@@ -24,14 +24,14 @@ jobs:
       - name: 🏗️ Build Project
         run: npm run build
 
-      - name: 🚀 Deploy to Hostinger via SSH
-        uses: easingthemes/ssh-deploy@main
+      - name: 🚀 Deploy to Hostinger via SCP (Password)
+        uses: appleboy/scp-action@master
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.HOSTINGER_SSH_PASSWORD }} # Usamos password si no hay SSH key, o la key si la tiene
-          ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.HOSTINGER_SSH_HOST }}
-          REMOTE_USER: ${{ secrets.HOSTINGER_SSH_USER }}
-          REMOTE_PORT: ${{ secrets.HOSTINGER_SSH_PORT }}
-          TARGET: "/home/${{ secrets.HOSTINGER_SSH_USER }}/domains/carloscanofernandez.com/public_html/brief-generator/"
-          EXCLUDE: "/node_modules/"
+          host: ${{ secrets.HOSTINGER_SSH_HOST }}
+          username: ${{ secrets.HOSTINGER_SSH_USER }}
+          password: ${{ secrets.HOSTINGER_SSH_PASSWORD }}
+          port: ${{ secrets.HOSTINGER_SSH_PORT }}
+          source: "dist/*"
+          target: "/home/${{ secrets.HOSTINGER_SSH_USER }}/domains/carloscanofernandez.com/public_html/brief-generator/"
+          strip_components: 1
+          overwrite: true
