@@ -1,6 +1,9 @@
 export const KEYWORD_EXPANSION_PROMPT = `You are an elite SEO and GEO (Generative Engine Optimization) strategist. Your goal is to map the entire search and conversational landscape for an article titled '{TITLE}' in {LANGUAGE}.
 
-Using the seed keywords as a starting point: {SEED_KEYWORDS}
+CRITICAL LOGIC & RELEVANCE:
+- Use "Common Sense": Every keyword must have a direct, logical connection to the specific topic of the title.
+- Priority: You MUST include all user-provided seed keywords in the output: {SEED_KEYWORDS}
+- Goal: Create a cohesive topical map that an LLM would recognize as authoritative. Avoid generic or disconnected terms.
 
 Generate EXACTLY 40 unique keyword proposals (10 per category) applying a deep "Thematic Expansion" logic:
 
@@ -30,13 +33,15 @@ ARTICLE DATA:
 - Language: {LANGUAGE}
 - Selected keywords: {SELECTED_KEYWORDS}
 
+STRATEGIC GOAL: Maximize positioning in LLMs (ChatGPT, Gemini, Perplexity) via GEO (Generative Engine Optimization).
+
 GEO CONTEXT — THE 7 PILLARS THE BRIEF MUST APPLY:
-Pillar 1 — Question Headline: The H1 must be a direct question that a user would ask an LLM.
+Pillar 1 — Question Headline: The H1 must be a direct question that a user would ask an LLM. It must look natural and citable.
 Pillar 2 — Power Lead: The first 150 characters must include a specific data point + context + source.
 Pillar 3 — Visible Date: Indicate format 'Published: DD Month YYYY, HH:MM UTC'.
 Pillar 4 — Verifiable Sources: Each data point must be cited as (Source, Month Year).
 Pillar 5 — Expert Author with Credentials: Byline with name, role, years of experience, and profiles.
-Pillar 6 — Question-based H2 every 300-400 words with direct answer in ≤60 words.
+Pillar 6 — Question-based H2 every 300-400 words with direct answer in ≤60 words. HEADINGS MUST FLOW LOGICALLY and integration of keywords must feel natural, not forced.
 Pillar 7 — Comparison Tables: At least 1 table with structured data.
 
 Generate the complete brief with ALL of the following sections in this exact order:
@@ -48,7 +53,7 @@ Generate the complete brief with ALL of the following sections in this exact ord
 List of 3-5 audience profiles with description of their knowledge level and reading motivation.
 
 ## Tone & Style
-Specific editorial tone guidelines: formal/informal, technical/general audience, use of analogies, sector jargon level. Include the 60-word rule for H2s.
+Specific editorial tone guidelines: formal/informal, technical/general audience, use of analogies, sector jargon level. Include the 60-word rule for H2s. Focus on clarity and authority.
 
 ## Keywords Table
 Table with ALL selected keywords organized by group, with estimated volume and usage notes.
@@ -56,13 +61,13 @@ Table with ALL selected keywords organized by group, with estimated volume and u
 |---------|-------|-------------|-------------|
 
 ## LLM Optimization Notes
-Specific GEO instructions based on the 7 pillars: analogies, cause-effect structure, citable lines, transitions that answer implicit questions, short declarative paragraphs.
+Specific GEO instructions based on the 7 pillars: how to use the selected keywords to answer implicit LLM questions, cause-effect structure, and citable lines.
 
 ## Article Structure
-Complete heading scheme with instructions for each section:
+Complete heading scheme with instructions for each section. IMPORTANT: The headings must follow a logical narrative and represent a high-authority answer to the user's intent.
 | Level | Proposed Heading | Content Instructions | GEO Rule Applied |
 |-------|-----------------|---------------------|-----------------|
-Include: H1, Intro (Power Lead), Date/Author, 4-6 H2s in question format, and Conclusion.
+Include: H1 (Question), Intro (Power Lead), Date/Author, 4-6 H2s (Questions), and Conclusion.
 
 ## Pre-Publication GEO Checklist
 The 10 GEO/LLM pillar criteria checklist:

@@ -347,7 +347,7 @@ export async function generateKeywordsWithSeeds(
     if (!model) throw createError('validation', 'Invalid model selected');
 
     const systemPrompt = buildKeywordPrompt(config.title, config.language, seedKeywords);
-    const userMessage = `Seed keywords: ${seedKeywords.join(', ')}`;
+    const userMessage = `TITLE: "${config.title}"\nSEED KEYWORDS: ${seedKeywords.join(', ')}\n\nTASK: Using these seeds as a mandatory base, expand to 40 keywords that logically cover the main topic and its semantic variations. Maintain high relevance and "common sense" to satisfy both humans and LLMs.`;
     const callFn = getCallFn(model.provider);
 
     const rawResponse = await callWithRetry(() =>
@@ -373,7 +373,7 @@ export async function generateBrief(
     if (!model) throw createError('validation', 'Invalid model selected');
 
     const systemPrompt = buildBriefPrompt(config.title, config.language, selectedKeywords);
-    const userMessage = `Generate the complete content brief now.`;
+    const userMessage = `ARTICLE TITLE: "${config.title}"\nSELECTED KEYWORDS: ${selectedKeywords.join(', ')}\n\nTASK: Generate a high-authority content brief optimized for GEO. Headlines must flow logically and integrations must be natural. Follow the 7 pillars and avoid robotic text. Generate the complete brief now.`;
     const streamFn = getStreamFn(model.provider);
 
     await streamFn(config.apiKey, model.id, systemPrompt, userMessage, onChunk, signal);
