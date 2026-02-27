@@ -1,12 +1,13 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { generateKeywordsWithSeeds } from '../../services/llm';
+import { generateKeywordsWithSeeds, suggestSeedKeywords } from '../../services/llm';
 import { getModelById } from '../../config/models';
 import type { AppError } from '../../types';
 
 export const SeedKeywords: React.FC = () => {
     const {
         seedKeywords, addSeedKeyword, removeSeedKeyword,
+        suggestedSeedKeywords, setSuggestedSeeds,
         config, prevStep, setStep,
         setKeywordProposals, setLoading, setError,
         isLoading, error
@@ -14,8 +15,27 @@ export const SeedKeywords: React.FC = () => {
 
     const [inputValue, setInputValue] = useState('');
     const [shakingChip, setShakingChip] = useState<string | null>(null);
+    const [isSuggesting, setIsSuggesting] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const abortRef = useRef<AbortController | null>(null);
+
+    // Fetch suggestions on mount
+    useEffect(() => {
+        if (suggestedSeedKeywords.length === 0 && !isSuggesting && config.title) {
+            const fetchSuggestions = async () => {
+                setIsSuggesting(true);
+                try {
+                    const suggestions = await suggestSeedKeywords(config);
+                    setSuggestedSeeds(suggestions);
+                } catch (err) {
+                    console.error('Failed to fetch seed suggestions:', err);
+                } finally {
+                    setIsSuggesting(false);
+                }
+            };
+            fetchSuggestions();
+        }
+    }, [config, suggestedSeedKeywords.length, isSuggesting, setSuggestedSeeds]);
 
     const addKeyword = useCallback((text: string) => {
         const trimmed = text.trim();
@@ -74,8 +94,7 @@ export const SeedKeywords: React.FC = () => {
         <div className="step-card">
             <h1 className="step-title">Seed Keywords</h1>
             <p className="step-description">
-                Enter up to 10 seed keywords that define your article's topic. The AI will expand these
-                into 15-20 keyword proposals organized by type.
+                Enter up to 10 seed keywords that define your article's topic.
             </p>
 
             {error && (
@@ -96,8 +115,37 @@ export const SeedKeywords: React.FC = () => {
                 </div>
             )}
 
+            <div className="form-group" style={{ marginBottom: '2.5rem' }}>
+                <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    Suggested by AI
+                    {isSuggesting && <span className="loading-dots" style={{ fontSize: '0.8rem', opacity: 0.7 }}>analyzing title...</span>}
+                </label>
+                <div className="suggested-chips">
+                    {suggestedSeedKeywords.length > 0 ? (
+                        suggestedSeedKeywords.map((tag) => {
+                            const isAdded = seedKeywords.some(k => k.toLowerCase() === tag.toLowerCase());
+                            return (
+                                <button
+                                    key={tag}
+                                    className={`suggest-chip ${isAdded ? 'added' : ''}`}
+                                    onClick={() => !isAdded && addKeyword(tag)}
+                                    disabled={isAdded || maxReached}
+                                >
+                                    {isAdded ? '✓ ' : '+ '}
+                                    {tag}
+                                </button>
+                            );
+                        })
+                    ) : !isSuggesting ? (
+                        <p style={{ fontSize: '0.85rem', color: 'var(--slate-500)', fontStyle: 'italic' }}>
+                            No suggestions found for this title.
+                        </p>
+                    ) : null}
+                </div>
+            </div>
+
             <div className="form-group">
-                <label className="form-label">Keywords</label>
+                <label className="form-label">Your Keywords</label>
                 <div
                     className="chip-area"
                     onClick={() => inputRef.current?.focus()}
@@ -124,7 +172,7 @@ export const SeedKeywords: React.FC = () => {
                         <input
                             ref={inputRef}
                             className="chip-input"
-                            placeholder={seedKeywords.length === 0 ? 'Type a keyword and press Enter...' : 'Add more...'}
+                            placeholder={seedKeywords.length === 0 ? 'Type or pick a suggestion...' : 'Add more...'}
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyDown}
@@ -152,10 +200,10 @@ export const SeedKeywords: React.FC = () => {
                     {isLoading ? (
                         <>
                             <span className="spinner" />
-                            Analyzing with {model?.label}...
+                            Expanding keywords with {model?.label}...
                         </>
                     ) : (
-                        <>Generate Keyword Proposals ✦</>
+                        <>Expand to 40 Keywords ✦</>
                     )}
                 </button>
             </div>

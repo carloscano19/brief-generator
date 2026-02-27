@@ -1,5 +1,5 @@
 import type { AppError } from '../types';
-import { buildKeywordPrompt, buildBriefPrompt } from '../config/prompts';
+import { buildKeywordPrompt, buildBriefPrompt, buildSeedSuggestionPrompt } from '../config/prompts';
 import { getModelById } from '../config/models';
 import { parseKeywordResponse } from '../utils/parser';
 
@@ -377,4 +377,38 @@ export async function generateBrief(
     const streamFn = getStreamFn(model.provider);
 
     await streamFn(config.apiKey, model.id, systemPrompt, userMessage, onChunk, signal);
+}
+
+export async function suggestSeedKeywords(
+    config: { title: string; language: string; modelId: string; apiKey: string },
+    signal?: AbortSignal
+): Promise<string[]> {
+    const model = getModelById(config.modelId);
+    if (!model) throw createError('validation', 'Invalid model selected');
+
+    const systemPrompt = buildSeedSuggestionPrompt(config.title, config.language);
+    const userMessage = `Based on the title "${config.title}", suggest seed keywords.`;
+    const callFn = getCallFn(model.provider);
+
+    const rawResponse = await callWithRetry(() =>
+        callFn(config.apiKey, model.id, systemPrompt, userMessage, signal)
+    );
+
+    try {
+        const parsed = JSON.parse(rawResponse);
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed.keywords && Array.isArray(parsed.keywords)) return parsed.keywords;
+        return [];
+    } catch {
+        // Fallback or cleanup junk text
+        const match = rawResponse.match(/\[.*\]/s);
+        if (match) {
+            try {
+                return JSON.parse(match[0]);
+            } catch {
+                return [];
+            }
+        }
+        return [];
+    }
 }

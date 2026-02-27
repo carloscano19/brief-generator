@@ -653,6 +653,49 @@ button {
 /* ═══════════════════════════════════════════
    CHIP INPUT
    ═══════════════════════════════════════════ */
+.suggested-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sm);
+  margin-top: var(--sm);
+}
+
+.suggest-chip {
+  background: var(--slate-100);
+  border: 1px solid var(--slate-200);
+  color: var(--slate-700);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.suggest-chip:hover:not(:disabled) {
+  background: var(--teal-lt);
+  border-color: var(--teal);
+  color: var(--teal-dk);
+  transform: translateY(-1px);
+}
+
+.suggest-chip:active {
+  transform: translateY(0);
+}
+
+.suggest-chip.added {
+  background: var(--teal);
+  color: var(--white);
+  border-color: var(--teal);
+  cursor: default;
+  opacity: 0.8;
+}
+
+.suggest-chip:disabled:not(.added) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .chip-area {
   display: flex;
   flex-wrap: wrap;

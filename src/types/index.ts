@@ -45,6 +45,7 @@ export type AppState = {
   currentStep: number;
   config: BriefConfig;
   seedKeywords: string[];
+  suggestedSeedKeywords: string[];
   keywordProposals: KeywordProposal[];
   brief: string;
   history: HistoryEntry[];
@@ -60,6 +61,7 @@ export type AppState = {
   updateConfig: (partial: Partial<BriefConfig>) => void;
   addSeedKeyword: (keyword: string) => void;
   removeSeedKeyword: (keyword: string) => void;
+  setSuggestedSeeds: (seeds: string[]) => void;
   setKeywordProposals: (proposals: KeywordProposal[]) => void;
   toggleKeyword: (index: number) => void;
   selectAllKeywords: () => void;

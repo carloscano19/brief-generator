@@ -45,6 +45,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     currentStep: 1,
     config: { ...DEFAULT_CONFIG, ...loadSavedConfig() },
     seedKeywords: [],
+    suggestedSeedKeywords: [],
     keywordProposals: [],
     brief: '',
     history: loadHistory(),
@@ -90,6 +91,8 @@ export const useAppStore = create<AppState>((set, get) => ({
         set((s) => ({
             seedKeywords: s.seedKeywords.filter((k) => k !== keyword),
         })),
+
+    setSuggestedSeeds: (seeds) => set({ suggestedSeedKeywords: seeds }),
 
     setKeywordProposals: (proposals) => set({ keywordProposals: proposals }),
 
@@ -172,6 +175,7 @@ export const useAppStore = create<AppState>((set, get) => ({
             currentStep: 1,
             config: { ...DEFAULT_CONFIG, ...loadSavedConfig() },
             seedKeywords: [],
+            suggestedSeedKeywords: [],
             keywordProposals: [],
             brief: '',
             isLoading: false,

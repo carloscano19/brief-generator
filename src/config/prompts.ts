@@ -89,6 +89,26 @@ The 10 GEO/LLM pillar criteria checklist:
 
 Respond in {LANGUAGE}. Use Markdown format.`;
 
+export const SEED_KEYWORD_SUGGESTION_PROMPT = `You are an SEO expert. Based on the article title "{TITLE}", suggest 6-8 relevant "seed keywords" that would be the best starting point for a deep topical expansion.
+
+Requirements:
+- Mix of short-tail (1-2 words) and long-tail (3+ words/questions) terms.
+- Directly related to the title's intent.
+- Language: {LANGUAGE}.
+
+Response Format:
+Respond ONLY with a JSON array of strings: ["keyword1", "keyword2", ...]
+No markdown, no backticks, no text before or after the JSON.`;
+
+export function buildSeedSuggestionPrompt(
+    title: string,
+    language: string
+): string {
+    return SEED_KEYWORD_SUGGESTION_PROMPT
+        .replace('{TITLE}', title)
+        .replace(/{LANGUAGE}/g, language);
+}
+
 export function buildKeywordPrompt(
     title: string,
     language: string,
