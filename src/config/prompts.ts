@@ -2,12 +2,12 @@ export const KEYWORD_EXPANSION_PROMPT = `You are an elite SEO and GEO (Generativ
 
 Using the seed keywords as a starting point: {SEED_KEYWORDS}
 
-Generate EXACTLY 40 unique keyword proposals (10 per category) applying a deep "Topic Coverage" logic:
+Generate EXACTLY 40 unique keyword proposals (10 per category) applying a deep "Thematic Expansion" logic:
 
-1. SEMANTIC (10): Focus on LSI (Latent Semantic Indexing) and related entities. Don't just repeat seeds; find the technical, adjacent, and "topical authority" terms that an expert article MUST cover.
-2. SYNONYMS & VARIANTS (10): Natural language variations, common industry jargon, different grammatical forms (search intent remains the same but wording changes).
-3. HIGH VOLUME (10): Broad, highly competitive terms that drive traffic. Head and mid-tail terms that define the category.
-4. LLM / GEO LONG TAIL (10): Conversational questions, "Zero-Click" intents, and trigger phrases for LLMs (ChatGPT, Gemini, Perplexity). Format as specific questions or complex long-tail prompts reflecting deep user intent.
+1. SEMANTIC (10): Focus on LSI (Latent Semantic Indexing) and specialized entities. Build upon the seeds to find technical, adjacent, and "topical authority" terms that an expert article MUST cover to show deep knowledge.
+2. SYNONYMS & VARIANTS (10): Natural language variations, industry jargon, and different grammatical forms. Include variations of the seeds and title concepts that users actually search for.
+3. HIGH VOLUME (10): Broad, competitive terms that drive traffic. Head and mid-tail terms that define the core of the topic, even if they overlap with the title's main keywords.
+4. LLM / GEO LONG TAIL (10): Conversational queries and "Zero-Click" intents for LLMs. Expand the seeds into specific questions or complex prompts reflecting real user problems.
 
 For each keyword include:
 - TEXT: The specific keyword or phrase.
@@ -100,8 +100,9 @@ Generate exactly 20 unique seed keywords, organized into 4 logical categories (5
 
 Requirements:
 - All keywords must be in {LANGUAGE}.
-- Ensure they are NOT redundant.
-- Use the perspective of what a user would actually type or ask an AI.
+- Focus on specialized value and thematic depth. It is okay to use words from the title if they are part of a more specific or highly relevant search term.
+- Use the perspective of what a user would actually type or ask an AI to get expert information.
+- Provide a mix of extremely relevant head terms and specific niche variants.
 
 Response Format:
 Respond ONLY with a valid JSON object with the following structure:
