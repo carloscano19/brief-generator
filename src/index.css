@@ -653,20 +653,95 @@ button {
 /* ═══════════════════════════════════════════
    CHIP INPUT
    ═══════════════════════════════════════════ */
+.suggestions-container {
+  margin-bottom: 2.5rem;
+  background: var(--slate-50);
+  padding: var(--xl);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--slate-200);
+}
+
+.suggestions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--lg);
+}
+
+.suggestions-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--xl);
+}
+
+.suggestion-group-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--slate-500);
+  margin-bottom: var(--sm);
+  display: flex;
+  align-items: center;
+  gap: var(--xs);
+}
+
+.suggestion-group-title span {
+  font-size: 14px;
+}
+
+.no-suggestions {
+  font-size: 12px;
+  color: var(--slate-400);
+  font-style: italic;
+}
+
+.skeleton-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--xs);
+}
+
+.skeleton-chip {
+  height: 28px;
+  width: 70px;
+  background: var(--slate-200);
+  border-radius: 14px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.loading-dots {
+  font-size: 0.8rem;
+  color: var(--teal);
+  font-weight: 500;
+}
+
 .suggested-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sm);
-  margin-top: var(--sm);
+  gap: 6px;
 }
 
 .suggest-chip {
-  background: var(--slate-100);
+  background: var(--white);
   border: 1px solid var(--slate-200);
   color: var(--slate-700);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;

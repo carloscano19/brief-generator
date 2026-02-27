@@ -41,11 +41,18 @@ export type AppError = {
   actionUrl?: string;
 };
 
+export type SeedSuggestions = {
+  short: string[];
+  long: string[];
+  questions: string[];
+  entities: string[];
+};
+
 export type AppState = {
   currentStep: number;
   config: BriefConfig;
   seedKeywords: string[];
-  suggestedSeedKeywords: string[];
+  suggestedSeedKeywords: SeedSuggestions | null;
   keywordProposals: KeywordProposal[];
   brief: string;
   history: HistoryEntry[];
@@ -61,7 +68,7 @@ export type AppState = {
   updateConfig: (partial: Partial<BriefConfig>) => void;
   addSeedKeyword: (keyword: string) => void;
   removeSeedKeyword: (keyword: string) => void;
-  setSuggestedSeeds: (seeds: string[]) => void;
+  setSuggestedSeeds: (seeds: SeedSuggestions | null) => void;
   setKeywordProposals: (proposals: KeywordProposal[]) => void;
   toggleKeyword: (index: number) => void;
   selectAllKeywords: () => void;

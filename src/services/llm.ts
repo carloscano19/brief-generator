@@ -1,4 +1,4 @@
-import type { AppError } from '../types';
+import type { AppError, SeedSuggestions } from '../types';
 import { buildKeywordPrompt, buildBriefPrompt, buildSeedSuggestionPrompt } from '../config/prompts';
 import { getModelById } from '../config/models';
 import { parseKeywordResponse } from '../utils/parser';
@@ -382,7 +382,7 @@ export async function generateBrief(
 export async function suggestSeedKeywords(
     config: { title: string; language: string; modelId: string; apiKey: string },
     signal?: AbortSignal
-): Promise<string[]> {
+): Promise<SeedSuggestions> {
     const model = getModelById(config.modelId);
     if (!model) throw createError('validation', 'Invalid model selected');
 
@@ -394,21 +394,21 @@ export async function suggestSeedKeywords(
         callFn(config.apiKey, model.id, systemPrompt, userMessage, signal)
     );
 
+    const defaultSuggestions: SeedSuggestions = { short: [], long: [], questions: [], entities: [] };
+
     try {
         const parsed = JSON.parse(rawResponse);
-        if (Array.isArray(parsed)) return parsed;
-        if (parsed.keywords && Array.isArray(parsed.keywords)) return parsed.keywords;
-        return [];
+        return { ...defaultSuggestions, ...parsed };
     } catch {
         // Fallback or cleanup junk text
-        const match = rawResponse.match(/\[.*\]/s);
+        const match = rawResponse.match(/\{.*\}/s);
         if (match) {
             try {
-                return JSON.parse(match[0]);
+                return { ...defaultSuggestions, ...JSON.parse(match[0]) };
             } catch {
-                return [];
+                return defaultSuggestions;
             }
         }
-        return [];
+        return defaultSuggestions;
     }
 }

@@ -21,7 +21,7 @@ export const SeedKeywords: React.FC = () => {
 
     // Fetch suggestions on mount
     useEffect(() => {
-        if (suggestedSeedKeywords.length === 0 && !isSuggesting && config.title) {
+        if (!suggestedSeedKeywords && !isSuggesting && config.title) {
             const fetchSuggestions = async () => {
                 setIsSuggesting(true);
                 try {
@@ -35,7 +35,7 @@ export const SeedKeywords: React.FC = () => {
             };
             fetchSuggestions();
         }
-    }, [config, suggestedSeedKeywords.length, isSuggesting, setSuggestedSeeds]);
+    }, [config, suggestedSeedKeywords, isSuggesting, setSuggestedSeeds]);
 
     const addKeyword = useCallback((text: string) => {
         const trimmed = text.trim();
@@ -90,11 +90,18 @@ export const SeedKeywords: React.FC = () => {
     const model = getModelById(config.modelId);
     const maxReached = seedKeywords.length >= 10;
 
+    const categories = [
+        { id: 'short', label: 'Short-tail', icon: '🎯' },
+        { id: 'long', label: 'Long-tail', icon: '📏' },
+        { id: 'questions', label: 'Questions', icon: '❓' },
+        { id: 'entities', label: 'Entities', icon: '🧠' },
+    ] as const;
+
     return (
         <div className="step-card">
             <h1 className="step-title">Seed Keywords</h1>
             <p className="step-description">
-                Enter up to 10 seed keywords that define your article's topic.
+                Enter up to 10 seed keywords. You can type them manually or pick from the AI-powered suggestions below.
             </p>
 
             {error && (
@@ -115,32 +122,43 @@ export const SeedKeywords: React.FC = () => {
                 </div>
             )}
 
-            <div className="form-group" style={{ marginBottom: '2.5rem' }}>
-                <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    Suggested by AI
-                    {isSuggesting && <span className="loading-dots" style={{ fontSize: '0.8rem', opacity: 0.7 }}>analyzing title...</span>}
-                </label>
-                <div className="suggested-chips">
-                    {suggestedSeedKeywords.length > 0 ? (
-                        suggestedSeedKeywords.map((tag) => {
-                            const isAdded = seedKeywords.some(k => k.toLowerCase() === tag.toLowerCase());
-                            return (
-                                <button
-                                    key={tag}
-                                    className={`suggest-chip ${isAdded ? 'added' : ''}`}
-                                    onClick={() => !isAdded && addKeyword(tag)}
-                                    disabled={isAdded || maxReached}
-                                >
-                                    {isAdded ? '✓ ' : '+ '}
-                                    {tag}
-                                </button>
-                            );
-                        })
-                    ) : !isSuggesting ? (
-                        <p style={{ fontSize: '0.85rem', color: 'var(--slate-500)', fontStyle: 'italic' }}>
-                            No suggestions found for this title.
-                        </p>
-                    ) : null}
+            <div className="suggestions-container">
+                <div className="suggestions-header">
+                    <label className="form-label">Suggested by AI</label>
+                    {isSuggesting && <span className="loading-dots">analyzing title...</span>}
+                </div>
+
+                <div className="suggestions-tabs">
+                    {categories.map((cat) => (
+                        <div key={cat.id} className="suggestion-group">
+                            <h4 className="suggestion-group-title">
+                                <span>{cat.icon}</span> {cat.label}
+                            </h4>
+                            <div className="suggested-chips">
+                                {suggestedSeedKeywords && suggestedSeedKeywords[cat.id]?.length > 0 ? (
+                                    suggestedSeedKeywords[cat.id].map((tag) => {
+                                        const isAdded = seedKeywords.some(k => k.toLowerCase() === tag.toLowerCase());
+                                        return (
+                                            <button
+                                                key={tag}
+                                                className={`suggest-chip ${isAdded ? 'added' : ''}`}
+                                                onClick={() => !isAdded && addKeyword(tag)}
+                                                disabled={isAdded || maxReached}
+                                            >
+                                                {isAdded ? '✓' : '+'} {tag}
+                                            </button>
+                                        );
+                                    })
+                                ) : !isSuggesting ? (
+                                    <span className="no-suggestions">No suggestions</span>
+                                ) : (
+                                    <div className="skeleton-chips">
+                                        {[1, 2, 3].map(i => <div key={i} className="skeleton-chip" />)}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 

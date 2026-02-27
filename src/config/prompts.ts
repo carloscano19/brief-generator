@@ -89,16 +89,30 @@ The 10 GEO/LLM pillar criteria checklist:
 
 Respond in {LANGUAGE}. Use Markdown format.`;
 
-export const SEED_KEYWORD_SUGGESTION_PROMPT = `You are an SEO expert. Based on the article title "{TITLE}", suggest 6-8 relevant "seed keywords" that would be the best starting point for a deep topical expansion.
+export const SEED_KEYWORD_SUGGESTION_PROMPT = `You are an elite SEO strategist. Your task is to provide a comprehensive set of "seed keywords" based on the article title "{TITLE}". These seeds will be used as a starting point for further expansion.
+
+Generate exactly 20 unique seed keywords, organized into 4 logical categories (5 per category):
+
+1. SHORT (5): 1-2 word broad terms that define the core topic.
+2. LONG (5): Specific 3+ word phrases with higher specificity.
+3. QUESTIONS (5): Clear search intents in question format (perfect for GEO/LLMs).
+4. ENTITIES (5): Related entities, technical terms, or specific concepts that MUST be mentioned.
 
 Requirements:
-- Mix of short-tail (1-2 words) and long-tail (3+ words/questions) terms.
-- Directly related to the title's intent.
-- Language: {LANGUAGE}.
+- All keywords must be in {LANGUAGE}.
+- Ensure they are NOT redundant.
+- Use the perspective of what a user would actually type or ask an AI.
 
 Response Format:
-Respond ONLY with a JSON array of strings: ["keyword1", "keyword2", ...]
-No markdown, no backticks, no text before or after the JSON.`;
+Respond ONLY with a valid JSON object with the following structure:
+{
+  "short": ["kw1", "kw2", ...],
+  "long": ["kw1", "kw2", ...],
+  "questions": ["kw1", "kw2", ...],
+  "entities": ["kw1", "kw2", ...]
+}
+
+IMPORTANT: No markdown, no backticks, no text before or after the JSON.`;
 
 export function buildSeedSuggestionPrompt(
     title: string,
