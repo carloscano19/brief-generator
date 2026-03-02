@@ -126,7 +126,7 @@ Specific GEO 2026 instructions organized by citability filter activation:
 Complete heading scheme with instructions for each section. The structure should follow the GEO 2026 optimized template:
 | Level | Proposed Heading | Content Instructions | GEO Citability Filter Activated |
 |-------|-----------------|---------------------|---------------------------------|
-Include: H1 (the user's exact title — do NOT propose a different one), Intro (Power Lead with data in first 150 chars), Date/Author block, 4-6 H2s (Questions following the 60-word rule), at least 1 comparison table section, and Conclusion.
+Include: Intro (Power Lead with data in first 150 chars), Date/Author block, 4-6 H2s (Questions following the 60-word rule), at least 1 comparison table section, and Conclusion. (Note: Do NOT include an H1 row, as the user's title is already the definitive H1).
 The headings must follow a logical narrative and represent a high-authority answer to the user's intent.
 
 ## Pre-Publication GEO Checklist (12 Criteria)
