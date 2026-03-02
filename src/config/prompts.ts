@@ -45,6 +45,9 @@ ARTICLE DATA:
 
 STRATEGIC GOAL: Maximize citability across ALL major AI engines (ChatGPT, Gemini, Perplexity, Copilot, Claude) by applying the complete GEO 2026 framework.
 
+CRITICAL RULE — H1 / TITLE:
+The title provided above ('{TITLE}') IS the definitive H1 of the article. It has been chosen by the user and MUST NOT be changed, rephrased, or replaced. The Article Structure section must use this exact title as the H1. All other headings (H2s, H3s) must complement and support this H1.
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 GEO 2026 CONTEXT — THE 15 CITABILITY FILTERS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -69,7 +72,7 @@ These are the 15 internal filters an LLM applies when deciding whether to cite a
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 THE 6 CONTENT PILLARS FOR CITABLE CONTENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Pillar 1 — Question Headline: The H1 must be a direct question a user would ask an LLM. It must look natural and citable. Formulas: 'Why Did [entity] [action] after [event]?' · 'How Does [mechanism] Work in [context]?' · 'What Is the [metric] of [entity] in [period]?'
+Pillar 1 — Headline Alignment: The H1 is the user's title (already defined, do not change it). If the title is already in question format, excellent — it maximizes Response Fit Score. If it is not a question, keep it as-is and ensure the H2s underneath are written as questions to compensate. Formulas for H2s: 'Why Did [entity] [action] after [event]?' · 'How Does [mechanism] Work in [context]?' · 'What Is the [metric] of [entity] in [period]?'
 Pillar 2 — Power Lead: The first 150 characters must include a specific data point + context + source. Formula: [SPECIFIC DATA: % change, price, volume] + [EVENT/CONTEXT] + [VERIFIABLE SOURCE]. This serves SHORT-FORM GROUNDING (direct fact questions).
 Pillar 3 — Visible Date: Format 'Published: [Month] [DD], [YYYY], [HH:MM] UTC · Updated: [date]'. Always update dateModified in schema to signal Freshness Confidence to LLMs.
 Pillar 4 — Verifiable Sources: Every data point must be cited as '(Source, Month Year)' directly in the text. Unsupported claims are detected and penalized by LLMs.
@@ -123,7 +126,7 @@ Specific GEO 2026 instructions organized by citability filter activation:
 Complete heading scheme with instructions for each section. The structure should follow the GEO 2026 optimized template:
 | Level | Proposed Heading | Content Instructions | GEO Citability Filter Activated |
 |-------|-----------------|---------------------|---------------------------------|
-Include: H1 (Question format), Intro (Power Lead with data in first 150 chars), Date/Author block, 4-6 H2s (Questions following the 60-word rule), at least 1 comparison table section, and Conclusion.
+Include: H1 (the user's exact title — do NOT propose a different one), Intro (Power Lead with data in first 150 chars), Date/Author block, 4-6 H2s (Questions following the 60-word rule), at least 1 comparison table section, and Conclusion.
 The headings must follow a logical narrative and represent a high-authority answer to the user's intent.
 
 ## Pre-Publication GEO Checklist (12 Criteria)
