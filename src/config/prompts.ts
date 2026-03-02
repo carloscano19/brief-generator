@@ -5,6 +5,9 @@ CRITICAL LOGIC & RELEVANCE:
 - Priority: You MUST include all user-provided seed keywords in the output: {SEED_KEYWORDS}
 - Goal: Create a cohesive topical map that an LLM would recognize as authoritative. Avoid generic or disconnected terms.
 
+TITLE DECOMPOSITION (MANDATORY):
+Before generating keywords, mentally break the title into its key concepts and distinctive terms. Each significant word or phrase from the title MUST appear in at least one keyword proposal — either standalone or as part of a longer phrase. For example, if the title is 'Fan Tokens and the Rise of Crypto-Based Loyalty Programs', then 'rise', 'fan tokens', 'crypto-based', and 'loyalty programs' should each appear in at least one keyword variation (e.g., 'rise of fan tokens', 'crypto loyalty rise', 'fan token growth and rise'). Do NOT ignore any distinctive term from the title — these are what the user chose to write about and must be reflected in the keyword landscape.
+
 GEO STRATEGY — TOPIC DOMINANCE & CITABILITY:
 Think about how LLMs decide what to cite. Keywords should target:
 - ENTITY UNDERSTANDING: Terms that define who/what the article covers and how it connects to other concepts in the field.
@@ -163,6 +166,7 @@ Generate exactly 20 unique seed keywords, organized into 4 logical categories (5
 
 Requirements:
 - All keywords must be in {LANGUAGE}.
+- TITLE DECOMPOSITION: Break the title into its key concepts. Each significant or distinctive word from the title (verbs, nouns, modifiers) MUST appear in at least one seed keyword. For example, if the title contains 'Rise', one seed should include 'rise' (e.g., 'rise of fan tokens'). Never ignore key title terms.
 - Focus on specialized value and thematic depth. It is okay to use words from the title if they are part of a more specific or highly relevant search term.
 - Use the perspective of what a user would actually type or ask an AI to get expert information.
 - Provide a mix of extremely relevant head terms and specific niche variants.
