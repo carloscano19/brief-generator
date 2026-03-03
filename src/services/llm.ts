@@ -375,16 +375,21 @@ export async function generateBrief(
 
     const systemPrompt = buildBriefPrompt(config.title, config.language, primaryKeyword, secondaryKeywords);
     const userMessage = `ARTICLE TITLE: "${config.title}"
-PRIMARY KEYWORD: ${primaryKeyword || 'N/A'}
-SUPPORTING KEYWORDS: ${secondaryKeywords.join(', ')}
+{PRIMARY_KEYWORD_INFO}
+{SUPPORTING_KEYWORDS_INFO}
 
-TASK: Generate a high-authority content brief. 
-STRICT REQUIREMENT: The Primary Keyword "${primaryKeyword}" MUST be the absolute anchor of the entire structure. At least 70% of the H2s must focus on this specific angle. 
-DO NOT deviate into generic definitions. Focus on the "${primaryKeyword}" aspect as requested. 
-Generate the complete brief now in ${config.language}.`;
+TASK: Generate the content brief now. 
+STRICT REQUIREMENT: Follow the "STRICT DOMINANCE RULE" for the Article Structure. At least 70% of H2s must focus on the primary topic angle.`;
+
+    const primaryInfo = primaryKeyword ? `PRIMARY KEYWORD: "${primaryKeyword}"` : 'PRIMARY KEYWORD: N/A';
+    const supportingInfo = `SUPPORTING KEYWORDS: ${secondaryKeywords.join(', ')}`;
+
+    const finalUserMessage = userMessage
+        .replace('{PRIMARY_KEYWORD_INFO}', primaryInfo)
+        .replace('{SUPPORTING_KEYWORDS_INFO}', supportingInfo);
+
     const streamFn = getStreamFn(model.provider);
-
-    await streamFn(config.apiKey, model.id, systemPrompt, userMessage, onChunk, signal);
+    await streamFn(config.apiKey, model.id, systemPrompt, finalUserMessage, onChunk, signal);
 }
 
 export async function suggestSeedKeywords(

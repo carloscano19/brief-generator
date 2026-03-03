@@ -36,7 +36,7 @@ export const BRIEF_GENERATION_PROMPT = `You are an expert in SEO, GEO (Generativ
 ARTICLE DATA:
 - Title: {TITLE}
 - Language: {LANGUAGE}
-{WEIGHTING_INSTRUCTIONS}
+{KEYWORD_DATA}
 
 STRATEGIC GOAL: Maximize citability across ALL major AI engines (ChatGPT, Gemini, Perplexity, Copilot, Claude) by applying the complete GEO 2026 framework.
 
@@ -125,7 +125,7 @@ Specific GEO 2026 instructions organized by citability filter activation:
 - Topic Dominance approach: how this article fits into a broader thematic cluster
 
 ## Article Structure
-Complete heading scheme with instructions for each section. The structure should follow the GEO 2026 optimized template:
+{STRUCTURE_INSTRUCTIONS}
 | Level | Proposed Heading | Content Instructions | GEO Citability Filter Activated |
 |-------|-----------------|---------------------|---------------------------------|
 Include: Intro (Power Lead with data in first 150 chars), Date/Author block, 4-6 H2s (Questions following the 60-word rule), at least 1 comparison table section, and Conclusion. (Note: Do NOT include an H1 row, as the user's title is already the definitive H1).
@@ -202,16 +202,20 @@ export function buildKeywordPrompt(
 }
 
 export function buildBriefPrompt(title: string, language: string, primaryKeyword: string | null, secondaryKeywords: string[]) {
-    const weightingInstructions = primaryKeyword
-        ? `
-- PRIMARY KEYWORD (70% weight): "${primaryKeyword}"
-- SUPPORTING KEYWORDS (30% weight): ${secondaryKeywords.length > 0 ? secondaryKeywords.map(k => `"${k}"`).join(', ') : 'None'}
-
-EXECUTION GUIDELINE: The brief must be an authoritative answer to the Primary Keyword. If the Primary Keyword is "rises of fan tokens", the H2s must focus on the "RISE" and "TREND", not just generic definitions.`
+    const keywordData = primaryKeyword
+        ? `- PRIMARY KEYWORD (70% weight): "${primaryKeyword}"\n- SUPPORTING KEYWORDS (30% weight): ${secondaryKeywords.length > 0 ? secondaryKeywords.map(k => `"${k}"`).join(', ') : 'None'}`
         : `- SELECTED KEYWORDS: ${secondaryKeywords.join(', ')}`;
 
+    const structureInstructions = primaryKeyword
+        ? `STRICT DOMINANCE RULE: The Primary Keyword "${primaryKeyword}" is the anchor. 
+1. AT LEAST 4 of the H2 headings MUST explicitly answer questions about or include "${primaryKeyword}".
+2. DO NOT waste H2s on generic "What is..." definitions.
+3. Every H2 must be a direct question that flows from the H1 titled "${title}" but focuses on the ANGLE of "${primaryKeyword}".`
+        : `Complete heading scheme for the title "${title}" using the selected keywords. Focus on a logical narrative.`;
+
     return BRIEF_GENERATION_PROMPT
-        .replace('{TITLE}', title)
+        .replace(/{TITLE}/g, title)
         .replace(/{LANGUAGE}/g, language)
-        .replace('{WEIGHTING_INSTRUCTIONS}', weightingInstructions);
+        .replace('{KEYWORD_DATA}', keywordData)
+        .replace('{STRUCTURE_INSTRUCTIONS}', structureInstructions);
 }
