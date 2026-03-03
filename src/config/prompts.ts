@@ -36,12 +36,19 @@ export const BRIEF_GENERATION_PROMPT = `You are an expert in SEO, GEO (Generativ
 ARTICLE DATA:
 - Title: {TITLE}
 - Language: {LANGUAGE}
-- Selected keywords: {SELECTED_KEYWORDS}
+{WEIGHTING_INSTRUCTIONS}
 
 STRATEGIC GOAL: Maximize citability across ALL major AI engines (ChatGPT, Gemini, Perplexity, Copilot, Claude) by applying the complete GEO 2026 framework.
 
 CRITICAL RULE — H1 / TITLE:
 The title provided above ('{TITLE}') IS the definitive H1 of the article. It has been chosen by the user and MUST NOT be changed, rephrased, or replaced. The Article Structure section must use this exact title as the H1. All other headings (H2s, H3s) must complement and support this H1.
+
+CRITICAL RULE — PRIMARY TOPIC DOMINANCE (70/30 RULE):
+1. THE PRIMARY TOPIC MUST DOMINATE: At least 70% of the H2 headings MUST focus on or explicitly include the Primary Keyword. 
+2. NO GENERIC INTROS: Do NOT start with generic H2s like "What is [Topic]?" unless the Primary Keyword IS specifically about defining the topic. 
+3. LOGICAL FLOW: The primary topic is the "Golden Thread" that connects every section. Supporting keywords (30%) should only be used to add depth to the primary narrative, never to divert the focus.
+4. HEADLINE REQUIREMENT: Every H2 must be a direct question that is highly relevant to the Primary Topic.
+...
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 GEO 2026 CONTEXT — THE 15 CITABILITY FILTERS
@@ -197,20 +204,14 @@ export function buildKeywordPrompt(
 export function buildBriefPrompt(title: string, language: string, primaryKeyword: string | null, secondaryKeywords: string[]) {
     const weightingInstructions = primaryKeyword
         ? `
-KEYWORD WEIGHTING (70/30 RULE):
-1. PRIMARY TOPIC (70% weight): "${primaryKeyword}" - This is the core pillar of the article.
-2. SUPPORTING TOPICS (30% weight combined): ${secondaryKeywords.length > 0 ? secondaryKeywords.map(k => `"${k}"`).join(', ') : 'None'}.
+- PRIMARY KEYWORD (70% weight): "${primaryKeyword}"
+- SUPPORTING KEYWORDS (30% weight): ${secondaryKeywords.length > 0 ? secondaryKeywords.map(k => `"${k}"`).join(', ') : 'None'}
 
-The H2 structure and semantic depth must be DOMINATED by the Primary Topic. Use supporting keywords to add nuance and breadth, but they must never overshadow the primary focus.`
-        : `KEYWORDS TO INCLUDE: ${secondaryKeywords.join(', ')}`;
+EXECUTION GUIDELINE: The brief must be an authoritative answer to the Primary Keyword. If the Primary Keyword is "rises of fan tokens", the H2s must focus on the "RISE" and "TREND", not just generic definitions.`
+        : `- SELECTED KEYWORDS: ${secondaryKeywords.join(', ')}`;
 
-    return `You are a world-class SEO and GEO (Generative Engine Optimization) strategist.
-Your task is to generate a comprehensive, high-authority content brief in ${language}.
-
-ARTICLE TITLE: "${title}"
-${weightingInstructions}
-
-${BRIEF_GENERATION_PROMPT}`
-        .replace('{TITLE}', title) // Replace {TITLE} in BRIEF_GENERATION_PROMPT
-        .replace(/{LANGUAGE}/g, language); // Replace {LANGUAGE} in BRIEF_GENERATION_PROMPT
+    return BRIEF_GENERATION_PROMPT
+        .replace('{TITLE}', title)
+        .replace(/{LANGUAGE}/g, language)
+        .replace('{WEIGHTING_INSTRUCTIONS}', weightingInstructions);
 }

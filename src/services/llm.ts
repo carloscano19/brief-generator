@@ -374,7 +374,14 @@ export async function generateBrief(
     if (!model) throw createError('validation', 'Invalid model selected');
 
     const systemPrompt = buildBriefPrompt(config.title, config.language, primaryKeyword, secondaryKeywords);
-    const userMessage = `ARTICLE TITLE: "${config.title}"\nPRIMARY KEYWORD: ${primaryKeyword || 'N/A'}\nSUPPORTING KEYWORDS: ${secondaryKeywords.join(', ')}\n\nTASK: Generate a high-authority content brief optimized for GEO. Headlines must flow logically and integrations must be natural. Follow the 70/30 weighting rule. Generate the complete brief now.`;
+    const userMessage = `ARTICLE TITLE: "${config.title}"
+PRIMARY KEYWORD: ${primaryKeyword || 'N/A'}
+SUPPORTING KEYWORDS: ${secondaryKeywords.join(', ')}
+
+TASK: Generate a high-authority content brief. 
+STRICT REQUIREMENT: The Primary Keyword "${primaryKeyword}" MUST be the absolute anchor of the entire structure. At least 70% of the H2s must focus on this specific angle. 
+DO NOT deviate into generic definitions. Focus on the "${primaryKeyword}" aspect as requested. 
+Generate the complete brief now in ${config.language}.`;
     const streamFn = getStreamFn(model.provider);
 
     await streamFn(config.apiKey, model.id, systemPrompt, userMessage, onChunk, signal);
