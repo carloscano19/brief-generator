@@ -394,20 +394,20 @@ export async function suggestSeedKeywords(
         callFn(config.apiKey, model.id, systemPrompt, userMessage, signal)
     );
 
-    const defaultSuggestions: SeedSuggestions = { short: [], long: [], questions: [], entities: [] };
-
+    const defaultSuggestions: SeedSuggestions = [];
     try {
         const parsed = JSON.parse(rawResponse);
-        return { ...defaultSuggestions, ...parsed };
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed.seeds && Array.isArray(parsed.seeds)) return parsed.seeds;
+        return defaultSuggestions;
     } catch {
-        // Fallback or cleanup junk text
-        const match = rawResponse.match(/\{.*\}/s);
+        const match = rawResponse.match(/\[.*\]/s) || rawResponse.match(/\{.*\}/s);
         if (match) {
             try {
-                return { ...defaultSuggestions, ...JSON.parse(match[0]) };
-            } catch {
-                return defaultSuggestions;
-            }
+                const parsed = JSON.parse(match[0]);
+                if (Array.isArray(parsed)) return parsed;
+                if (parsed.seeds && Array.isArray(parsed.seeds)) return parsed.seeds;
+            } catch { /* ignore */ }
         }
         return defaultSuggestions;
     }

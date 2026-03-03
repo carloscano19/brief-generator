@@ -113,19 +113,6 @@ export const useAppStore = create<AppState>((set, get) => ({
             keywordProposals: s.keywordProposals.map((kw) => ({ ...kw, selected: false })),
         })),
 
-    selectGroup: (group) =>
-        set((s) => ({
-            keywordProposals: s.keywordProposals.map((kw) =>
-                kw.group === group ? { ...kw, selected: true } : kw
-            ),
-        })),
-
-    deselectGroup: (group) =>
-        set((s) => ({
-            keywordProposals: s.keywordProposals.map((kw) =>
-                kw.group === group ? { ...kw, selected: false } : kw
-            ),
-        })),
 
     getSelectedKeywords: () => get().keywordProposals.filter((kw) => kw.selected),
 

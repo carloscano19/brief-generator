@@ -8,7 +8,7 @@ export type LLMModel = {
 
 export type KeywordProposal = {
   text: string;
-  group: 'semantic' | 'synonyms' | 'volume' | 'llm';
+  group?: 'semantic' | 'synonyms' | 'volume' | 'llm';
   volume: 'low' | 'medium' | 'high';
   rationale: string;
   selected: boolean;
@@ -41,12 +41,7 @@ export type AppError = {
   actionUrl?: string;
 };
 
-export type SeedSuggestions = {
-  short: string[];
-  long: string[];
-  questions: string[];
-  entities: string[];
-};
+export type SeedSuggestions = string[];
 
 export type AppState = {
   currentStep: number;
@@ -73,8 +68,6 @@ export type AppState = {
   toggleKeyword: (index: number) => void;
   selectAllKeywords: () => void;
   deselectAllKeywords: () => void;
-  selectGroup: (group: KeywordProposal['group']) => void;
-  deselectGroup: (group: KeywordProposal['group']) => void;
   getSelectedKeywords: () => KeywordProposal[];
   setBrief: (brief: string) => void;
   appendBrief: (chunk: string) => void;
@@ -86,20 +79,6 @@ export type AppState = {
   loadFromHistory: (id: string) => void;
   setShowHistory: (show: boolean) => void;
   resetSession: () => void;
-};
-
-export const KEYWORD_GROUP_LABELS: Record<KeywordProposal['group'], string> = {
-  semantic: 'Semantic',
-  synonyms: 'Synonyms & Variants',
-  volume: 'High Volume',
-  llm: 'LLM / Long Tail',
-};
-
-export const KEYWORD_GROUP_ICONS: Record<KeywordProposal['group'], string> = {
-  semantic: '📚',
-  synonyms: '🔤',
-  volume: '📈',
-  llm: '🤖',
 };
 
 export const VOLUME_LABELS: Record<string, string> = {

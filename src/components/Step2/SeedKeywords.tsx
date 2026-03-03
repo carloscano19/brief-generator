@@ -90,12 +90,6 @@ export const SeedKeywords: React.FC = () => {
     const model = getModelById(config.modelId);
     const maxReached = seedKeywords.length >= 10;
 
-    const categories = [
-        { id: 'short', label: 'Short-tail', icon: '🎯' },
-        { id: 'long', label: 'Long-tail', icon: '📏' },
-        { id: 'questions', label: 'Questions', icon: '❓' },
-        { id: 'entities', label: 'Entities', icon: '🧠' },
-    ] as const;
 
     return (
         <div className="step-card">
@@ -128,37 +122,28 @@ export const SeedKeywords: React.FC = () => {
                     {isSuggesting && <span className="loading-dots">analyzing title...</span>}
                 </div>
 
-                <div className="suggestions-tabs">
-                    {categories.map((cat) => (
-                        <div key={cat.id} className="suggestion-group">
-                            <h4 className="suggestion-group-title">
-                                <span>{cat.icon}</span> {cat.label}
-                            </h4>
-                            <div className="suggested-chips">
-                                {suggestedSeedKeywords && suggestedSeedKeywords[cat.id]?.length > 0 ? (
-                                    suggestedSeedKeywords[cat.id].map((tag) => {
-                                        const isAdded = seedKeywords.some(k => k.toLowerCase() === tag.toLowerCase());
-                                        return (
-                                            <button
-                                                key={tag}
-                                                className={`suggest-chip ${isAdded ? 'added' : ''}`}
-                                                onClick={() => !isAdded && addKeyword(tag)}
-                                                disabled={isAdded || maxReached}
-                                            >
-                                                {isAdded ? '✓' : '+'} {tag}
-                                            </button>
-                                        );
-                                    })
-                                ) : !isSuggesting ? (
-                                    <span className="no-suggestions">No suggestions</span>
-                                ) : (
-                                    <div className="skeleton-chips">
-                                        {[1, 2, 3].map(i => <div key={i} className="skeleton-chip" />)}
-                                    </div>
-                                )}
-                            </div>
+                <div className="suggested-chips">
+                    {suggestedSeedKeywords && suggestedSeedKeywords.length > 0 ? (
+                        suggestedSeedKeywords.map((tag) => {
+                            const isAdded = seedKeywords.some(k => k.toLowerCase() === tag.toLowerCase());
+                            return (
+                                <button
+                                    key={tag}
+                                    className={`suggest-chip ${isAdded ? 'added' : ''}`}
+                                    onClick={() => !isAdded && addKeyword(tag)}
+                                    disabled={isAdded || maxReached}
+                                >
+                                    {isAdded ? '✓' : '+'} {tag}
+                                </button>
+                            );
+                        })
+                    ) : !isSuggesting ? (
+                        <span className="no-suggestions">No suggestions</span>
+                    ) : (
+                        <div className="skeleton-chips">
+                            {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton-chip" />)}
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
 

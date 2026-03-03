@@ -2,48 +2,22 @@ import React, { useState, useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { generateBrief } from '../../services/llm';
 import { getModelById } from '../../config/models';
-import { KEYWORD_GROUP_LABELS, KEYWORD_GROUP_ICONS, VOLUME_LABELS } from '../../types';
-import type { AppError, KeywordProposal } from '../../types';
-
-const GROUP_COLORS: Record<KeywordProposal['group'], { bg: string; color: string }> = {
-    semantic: { bg: 'var(--blue-soft)', color: 'var(--blue)' },
-    synonyms: { bg: 'var(--purple-soft)', color: 'var(--purple)' },
-    volume: { bg: 'var(--green-soft)', color: 'var(--green)' },
-    llm: { bg: 'var(--amber-soft)', color: 'var(--amber)' },
-};
+import { VOLUME_LABELS } from '../../types';
+import type { AppError } from '../../types';
 
 export const KeywordSelection: React.FC = () => {
     const {
         keywordProposals, toggleKeyword, selectAllKeywords, deselectAllKeywords,
-        selectGroup, deselectGroup, config, prevStep,
+        config, prevStep,
         setBrief, setLoading, setStreaming, setError, setStep: goToStep,
         isLoading, error, addToHistory
     } = useAppStore();
 
-    const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
     const [warningShown, setWarningShown] = useState(false);
     const abortRef = useRef<AbortController | null>(null);
     const model = getModelById(config.modelId);
 
     const selectedCount = keywordProposals.filter((kw) => kw.selected).length;
-
-    const groups: KeywordProposal['group'][] = ['llm', 'semantic', 'synonyms', 'volume'];
-    const groupedKeywords = groups.reduce((acc, group) => {
-        acc[group] = keywordProposals.filter((kw) => kw.group === group);
-        return acc;
-    }, {} as Record<string, KeywordProposal[]>);
-
-    const toggleGroup = (group: string) => {
-        setCollapsedGroups((prev) => {
-            const next = new Set(prev);
-            if (next.has(group)) next.delete(group);
-            else next.add(group);
-            return next;
-        });
-    };
-
-    const isGroupAllSelected = (group: KeywordProposal['group']) =>
-        groupedKeywords[group]?.every((kw) => kw.selected);
 
     const handleGenerateBrief = async () => {
         if (selectedCount < 3 && !warningShown) {
@@ -134,78 +108,35 @@ export const KeywordSelection: React.FC = () => {
                 </div>
             )}
 
-            {/* Keyword Groups */}
-            <div className="keyword-groups">
-                {groups.map((group) => {
-                    const kws = groupedKeywords[group];
-                    if (!kws || kws.length === 0) return null;
-                    const colors = GROUP_COLORS[group];
-                    const collapsed = collapsedGroups.has(group);
-                    const allSelected = isGroupAllSelected(group);
-
-                    return (
-                        <div className="keyword-group" key={group}>
-                            <div className="keyword-group-header" onClick={() => toggleGroup(group)}>
-                                <div className="keyword-group-title">
-                                    <span>{KEYWORD_GROUP_ICONS[group]}</span>
-                                    <span
-                                        className="keyword-group-badge"
-                                        style={{ background: colors.bg, color: colors.color }}
-                                    >
-                                        {KEYWORD_GROUP_LABELS[group]} ({kws.length})
-                                    </span>
-                                </div>
-                                <div className="keyword-group-actions" onClick={(e) => e.stopPropagation()}>
-                                    <button
-                                        className="btn btn-ghost"
-                                        style={{ fontSize: '11px' }}
-                                        onClick={() => allSelected ? deselectGroup(group) : selectGroup(group)}
-                                    >
-                                        {allSelected ? 'Deselect group' : 'Select group'}
-                                    </button>
-                                    <span style={{ color: 'var(--ink-3)', fontSize: '16px' }}>
-                                        {collapsed ? '▸' : '▾'}
-                                    </span>
-                                </div>
+            {/* Keywords List */}
+            <div className="keyword-list">
+                {keywordProposals.map((kw, index) => (
+                    <div
+                        key={index}
+                        className={`keyword-item ${kw.selected ? 'selected' : ''}`}
+                        onClick={() => toggleKeyword(index)}
+                        role="checkbox"
+                        aria-checked={kw.selected}
+                        aria-label={kw.text}
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === ' ') { e.preventDefault(); toggleKeyword(index); }
+                        }}
+                    >
+                        <div className="keyword-checkbox">{kw.selected ? '✓' : ''}</div>
+                        <div>
+                            <div className="keyword-text">{kw.text}</div>
+                            <div className="keyword-meta">
+                                <span className={`volume-badge ${kw.volume}`}>
+                                    {VOLUME_LABELS[kw.volume]}
+                                </span>
                             </div>
-
-                            {!collapsed && (
-                                <div className="keyword-group-body">
-                                    {kws.map((kw) => {
-                                        const globalIndex = keywordProposals.indexOf(kw);
-                                        return (
-                                            <div
-                                                key={globalIndex}
-                                                className={`keyword-item ${kw.selected ? 'selected' : ''}`}
-                                                onClick={() => toggleKeyword(globalIndex)}
-                                                role="checkbox"
-                                                aria-checked={kw.selected}
-                                                aria-label={kw.text}
-                                                tabIndex={0}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === ' ') { e.preventDefault(); toggleKeyword(globalIndex); }
-                                                }}
-                                            >
-                                                <div className="keyword-checkbox">{kw.selected ? '✓' : ''}</div>
-                                                <div>
-                                                    <div className="keyword-text">{kw.text}</div>
-                                                    <div className="keyword-meta">
-                                                        <span className={`volume-badge ${kw.volume}`}>
-                                                            {VOLUME_LABELS[kw.volume]}
-                                                        </span>
-                                                    </div>
-                                                    {kw.rationale && (
-                                                        <div className="keyword-rationale">{kw.rationale}</div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                            {kw.rationale && (
+                                <div className="keyword-rationale">{kw.rationale}</div>
                             )}
                         </div>
-                    );
-                })}
+                    </div>
+                ))}
             </div>
 
             {/* Footer */}

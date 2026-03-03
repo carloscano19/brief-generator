@@ -5,35 +5,30 @@ CRITICAL LOGIC & RELEVANCE:
 - Priority: You MUST include all user-provided seed keywords in the output: {SEED_KEYWORDS}
 - Goal: Create a cohesive topical map that an LLM would recognize as authoritative. Avoid generic or disconnected terms.
 
-TITLE DECOMPOSITION (MANDATORY):
-Before generating keywords, mentally break the title into its key concepts and distinctive terms. Each significant word or phrase from the title MUST appear in at least one keyword proposal — either standalone or as part of a longer phrase. For example, if the title is 'Fan Tokens and the Rise of Crypto-Based Loyalty Programs', then 'rise', 'fan tokens', 'crypto-based', and 'loyalty programs' should each appear in at least one keyword variation (e.g., 'rise of fan tokens', 'crypto loyalty rise', 'fan token growth and rise'). Do NOT ignore any distinctive term from the title — these are what the user chose to write about and must be reflected in the keyword landscape.
-
 GEO STRATEGY — TOPIC DOMINANCE & CITABILITY:
-Think about how LLMs decide what to cite. Keywords should target:
-- ENTITY UNDERSTANDING: Terms that define who/what the article covers and how it connects to other concepts in the field.
-- TOPIC DOMINANCE: Terms that build a complete thematic cluster — definition, comparisons, history, mechanisms, use cases — so the LLM considers this a reference source for the entire domain.
-- RESPONSE FIT: Exact phrases users type or ask LLMs, so the article enters the grounding pool for those queries.
-- FACT DENSITY: Data-oriented terms (metrics, statistics, comparisons) that signal citable, information-rich content.
+- ENTITY UNDERSTANDING: Terms that define who/what the article covers.
+- TOPIC DOMINANCE: Terms that build a complete thematic cluster (definitions, comparisons, use cases).
+- RESPONSE FIT: Exact phrases users ask LLMs ('How does X work?', 'What is the best Y?').
+- FACT DENSITY: Data-oriented terms that signal information-rich content.
 
-Generate EXACTLY 40 unique keyword proposals (10 per category) applying a deep "Thematic Expansion" logic:
-
-1. SEMANTIC (10): Focus on LSI (Latent Semantic Indexing) and specialized entities. Build upon the seeds to find technical, adjacent, and "topical authority" terms that an expert article MUST cover to show deep knowledge. Include terms that reinforce Entity Understanding and Source Authority for LLMs.
-2. SYNONYMS & VARIANTS (10): Natural language variations, industry jargon, and different grammatical forms. Include variations of the seeds and title concepts that users actually search for. Consider how different AI engines phrase the same concept.
-3. HIGH VOLUME (10): Broad, competitive terms that drive traffic. Head and mid-tail terms that define the core of the topic, even if they overlap with the title's main keywords. Include terms that trigger both traditional search and AI-generated responses.
-4. LLM / GEO LONG TAIL (10): Conversational queries and "Zero-Click" intents for LLMs. Include both SHORT-FORM GROUNDING queries (direct fact questions: 'What is X?', 'How much does Y cost?') and LONG-FORM GROUNDING queries (process/comparison questions: 'How does X work?', 'Which is better, X or Y?'). These should reflect real problems users ask AI models to solve.
+Generate EXACTLY 40 unique keyword proposals applying a deep "Thematic Expansion" logic. Include a mix of:
+1. Core SEO terms (high relevance, entities).
+2. Natural language variations and industry jargon.
+3. High-volume head terms.
+4. Long-tail conversational queries and direct questions for AI grounding.
 
 For each keyword include:
 - TEXT: The specific keyword or phrase.
-- GROUP: 'semantic', 'synonyms', 'volume', or 'llm'.
-- VOLUME: 'low' (<500), 'medium' (500-2000), or 'high' (>2000) based on typical industry demand for this niche.
+- VOLUME: 'low' (<500), 'medium' (500-2000), or 'high' (>2000) based on typical industry demand.
 - RATIONALE: A 1-sentence technical explanation of WHY this term is vital for SEO/GEO authority.
 
 Response Format:
-Respond ONLY with valid JSON following this schema: {"keywords": [{"text": "", "group": "semantic|synonyms|volume|llm", "volume": "low|medium|high", "rationale": ""}]}
+Respond ONLY with valid JSON following this schema: {"keywords": [{"text": "", "volume": "low|medium|high", "rationale": ""}]}
 
 IMPORTANT:
 - Language: {LANGUAGE}.
 - Return EXACTLY 40 keywords.
+- No categories, no groups, just one flat list of keywords.
 - No markdown, no backticks, no text before or after the JSON.`;
 
 export const BRIEF_GENERATION_PROMPT = `You are an expert in SEO, GEO (Generative Engine Optimization), and editorial content strategy — updated with the GEO 2026 framework. Generate a complete and detailed content brief for the following article:
@@ -156,35 +151,28 @@ The headings must follow a logical narrative and represent a high-authority answ
 
 Respond in {LANGUAGE}. Use Markdown format.`;
 
-export const SEED_KEYWORD_SUGGESTION_PROMPT = `You are an elite SEO and GEO (Generative Engine Optimization) strategist. Your task is to provide a comprehensive set of "seed keywords" based on the article title "{TITLE}". These seeds will be used as a starting point for further keyword expansion.
+export const SEED_KEYWORD_SUGGESTION_PROMPT = `You are an elite SEO and GEO (Generative Engine Optimization) strategist. Your task is to provide a highly relevant list of "seed keywords" based on the article title "{TITLE}". 
 
-GEO CONTEXT: These seed keywords should help the article pass the LLM citability filters — especially Entity Understanding, Response Fit Score, and Semantic Alignment. Think about what terms an AI model searches for during its grounding process.
+GEO CONTEXT: These seeds should help the article pass LLM citability filters (Entity Understanding, Response Fit, Semantic Alignment). 
 
-Generate exactly 20 unique seed keywords, organized into 4 logical categories (5 per category):
-
-1. SHORT (5): 1-2 word broad terms that define the core topic and establish Entity Understanding. These should be the essential concepts an LLM associates with this domain.
-2. LONG (5): Specific 3+ word phrases with higher specificity. Include terms that serve both short-form grounding (direct fact lookups) and long-form grounding (detailed process queries).
-3. QUESTIONS (5): Clear search intents in question format. Mix direct fact questions (short-form grounding: 'What is X?', 'How much does Y cost?') with process/comparison questions (long-form grounding: 'How does X work?', 'Which is better?'). These are perfect for GEO because they match what users ask AI models.
-4. ENTITIES (5): Related entities, technical terms, or specific concepts that MUST be mentioned to demonstrate topical authority and activate Primary Source Detection. Include entities that connect to the topic's Knowledge Graph neighborhood.
+Generate EXACTLY 15 unique seed keywords that represent the core thematic cluster of the title. Include a mix of:
+1. Essential concepts and entities.
+2. Specific niche variations.
+3. Common questions users ask AI about this topic.
 
 Requirements:
 - All keywords must be in {LANGUAGE}.
-- TITLE DECOMPOSITION: Break the title into its key concepts. Each significant or distinctive word from the title (verbs, nouns, modifiers) MUST appear in at least one seed keyword. For example, if the title contains 'Rise', one seed should include 'rise' (e.g., 'rise of fan tokens'). Never ignore key title terms.
-- Focus on specialized value and thematic depth. It is okay to use words from the title if they are part of a more specific or highly relevant search term.
-- Use the perspective of what a user would actually type or ask an AI to get expert information.
-- Provide a mix of extremely relevant head terms and specific niche variants.
-- Think about Topic Dominance: these seeds should collectively cover the complete thematic cluster around the title.
+- TOPIC RELEVANCE: Every keyword must be strictly related to the title. Avoid generic terms.
+- TITLE DECOMPOSITION: Ensure key concepts from the title are reflected in the seeds.
+- Perspective: Use terms a user would actually type or ask an AI to find expert info.
 
 Response Format:
-Respond ONLY with a valid JSON object with the following structure:
+Respond ONLY with a valid JSON object:
 {
-  "short": ["kw1", "kw2", ...],
-  "long": ["kw1", "kw2", ...],
-  "questions": ["kw1", "kw2", ...],
-  "entities": ["kw1", "kw2", ...]
+  "seeds": ["kw1", "kw2", "kw3", ...]
 }
 
-IMPORTANT: No markdown, no backticks, no text before or after the JSON.`;
+IMPORTANT: No categories, no markdown, no backticks, no text before or after the JSON.`;
 
 export function buildSeedSuggestionPrompt(
     title: string,

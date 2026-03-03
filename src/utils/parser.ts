@@ -20,9 +20,9 @@ export function parseKeywordResponse(raw: string): KeywordProposal[] {
             throw new Error('Expected array of keywords');
         }
 
-        return keywords.map((kw: Record<string, string>) => ({
+        return keywords.map((kw: Record<string, any>) => ({
             text: kw.text || kw.keyword || '',
-            group: normalizeGroup(kw.group || kw.category || ''),
+            group: kw.group || kw.category ? normalizeGroup(kw.group || kw.category) : undefined,
             volume: normalizeVolume(kw.volume || kw.estimated_volume || 'medium'),
             rationale: kw.rationale || kw.justification || kw.reason || '',
             selected: false,
