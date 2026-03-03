@@ -12,6 +12,7 @@ export type KeywordProposal = {
   volume: 'low' | 'medium' | 'high';
   rationale: string;
   selected: boolean;
+  isPrimary?: boolean;
 };
 
 export type BriefConfig = {
@@ -66,6 +67,7 @@ export type AppState = {
   setSuggestedSeeds: (seeds: SeedSuggestions | null) => void;
   setKeywordProposals: (proposals: KeywordProposal[]) => void;
   toggleKeyword: (index: number) => void;
+  setPrimaryKeyword: (index: number | null) => void;
   selectAllKeywords: () => void;
   deselectAllKeywords: () => void;
   getSelectedKeywords: () => KeywordProposal[];

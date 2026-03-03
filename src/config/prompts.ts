@@ -194,13 +194,23 @@ export function buildKeywordPrompt(
         .replace('{SEED_KEYWORDS}', seedKeywords.join(', '));
 }
 
-export function buildBriefPrompt(
-    title: string,
-    language: string,
-    selectedKeywords: string[]
-): string {
-    return BRIEF_GENERATION_PROMPT
-        .replace('{TITLE}', title)
-        .replace(/{LANGUAGE}/g, language)
-        .replace('{SELECTED_KEYWORDS}', selectedKeywords.join(', '));
+export function buildBriefPrompt(title: string, language: string, primaryKeyword: string | null, secondaryKeywords: string[]) {
+    const weightingInstructions = primaryKeyword
+        ? `
+KEYWORD WEIGHTING (70/30 RULE):
+1. PRIMARY TOPIC (70% weight): "${primaryKeyword}" - This is the core pillar of the article.
+2. SUPPORTING TOPICS (30% weight combined): ${secondaryKeywords.length > 0 ? secondaryKeywords.map(k => `"${k}"`).join(', ') : 'None'}.
+
+The H2 structure and semantic depth must be DOMINATED by the Primary Topic. Use supporting keywords to add nuance and breadth, but they must never overshadow the primary focus.`
+        : `KEYWORDS TO INCLUDE: ${secondaryKeywords.join(', ')}`;
+
+    return `You are a world-class SEO and GEO (Generative Engine Optimization) strategist.
+Your task is to generate a comprehensive, high-authority content brief in ${language}.
+
+ARTICLE TITLE: "${title}"
+${weightingInstructions}
+
+${BRIEF_GENERATION_PROMPT}`
+        .replace('{TITLE}', title) // Replace {TITLE} in BRIEF_GENERATION_PROMPT
+        .replace(/{LANGUAGE}/g, language); // Replace {LANGUAGE} in BRIEF_GENERATION_PROMPT
 }

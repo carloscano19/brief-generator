@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { generateBrief } from '../../services/llm';
 import { getModelById } from '../../config/models';
@@ -13,18 +13,12 @@ export const KeywordSelection: React.FC = () => {
         isLoading, error, addToHistory
     } = useAppStore();
 
-    const [warningShown, setWarningShown] = useState(false);
     const abortRef = useRef<AbortController | null>(null);
     const model = getModelById(config.modelId);
 
     const selectedCount = keywordProposals.filter((kw) => kw.selected).length;
 
     const handleGenerateBrief = async () => {
-        if (selectedCount < 3 && !warningShown) {
-            setWarningShown(true);
-            return;
-        }
-
         setError(null);
         setLoading(true);
         setStreaming(true);
@@ -32,15 +26,19 @@ export const KeywordSelection: React.FC = () => {
         goToStep(4);
 
         abortRef.current = new AbortController();
-        const selectedTexts = keywordProposals
-            .filter((kw) => kw.selected)
-            .map((kw) => kw.text);
+        const primaryKw = keywordProposals.find(kw => kw.isPrimary);
+        const secondaryKws = keywordProposals.filter(kw => kw.selected && !kw.isPrimary);
+
+        const selectedTexts = primaryKw
+            ? [primaryKw.text, ...secondaryKws.map(k => k.text)]
+            : secondaryKws.map(k => k.text);
 
         try {
             await generateBrief(
                 config,
-                selectedTexts,
-                (chunk) => useAppStore.getState().appendBrief(chunk),
+                primaryKw?.text || null,
+                secondaryKws.map(k => k.text),
+                (chunk: string) => useAppStore.getState().appendBrief(chunk),
                 abortRef.current.signal
             );
 
@@ -84,19 +82,6 @@ export const KeywordSelection: React.FC = () => {
                 </div>
             </div>
 
-            {/* Warning for less than 3 keywords */}
-            {warningShown && selectedCount < 3 && (
-                <div className="error-banner warning" role="status" aria-live="polite">
-                    <span className="error-icon">⚠️</span>
-                    <div className="error-text">
-                        <div className="error-title">Only {selectedCount} keyword{selectedCount !== 1 ? 's' : ''} selected</div>
-                        <div className="error-message">
-                            For a high-quality brief, we recommend at least 3 keywords. You can continue, but the result may be more generic.
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {error && (
                 <div className="error-banner error" role="alert" aria-live="assertive">
                     <span className="error-icon">⚠️</span>
@@ -113,7 +98,7 @@ export const KeywordSelection: React.FC = () => {
                 {keywordProposals.map((kw, index) => (
                     <div
                         key={index}
-                        className={`keyword-item ${kw.selected ? 'selected' : ''}`}
+                        className={`keyword-item ${kw.selected ? 'selected' : ''} ${kw.isPrimary ? 'primary' : ''}`}
                         onClick={() => toggleKeyword(index)}
                         role="checkbox"
                         aria-checked={kw.selected}
@@ -123,9 +108,14 @@ export const KeywordSelection: React.FC = () => {
                             if (e.key === ' ') { e.preventDefault(); toggleKeyword(index); }
                         }}
                     >
-                        <div className="keyword-checkbox">{kw.selected ? '✓' : ''}</div>
-                        <div>
-                            <div className="keyword-text">{kw.text}</div>
+                        <div className="keyword-checkbox">
+                            {kw.isPrimary ? '⭐' : (kw.selected ? '✓' : '')}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <div className="keyword-text-row">
+                                <span className="keyword-text">{kw.text}</span>
+                                {kw.isPrimary && <span className="primary-badge">PRIMARY (70%)</span>}
+                            </div>
                             <div className="keyword-meta">
                                 <span className={`volume-badge ${kw.volume}`}>
                                     {VOLUME_LABELS[kw.volume]}
@@ -133,6 +123,17 @@ export const KeywordSelection: React.FC = () => {
                             </div>
                             {kw.rationale && (
                                 <div className="keyword-rationale">{kw.rationale}</div>
+                            )}
+                        </div>
+                        <div className="keyword-actions" onClick={(e) => e.stopPropagation()}>
+                            {!kw.isPrimary && (
+                                <button
+                                    className="btn btn-ghost primary-select-btn"
+                                    onClick={() => useAppStore.getState().setPrimaryKeyword(index)}
+                                    title="Set as Primary Topic"
+                                >
+                                    ⭐ Principal
+                                </button>
                             )}
                         </div>
                     </div>
@@ -159,8 +160,6 @@ export const KeywordSelection: React.FC = () => {
                             <span className="spinner" />
                             Generating Brief...
                         </>
-                    ) : warningShown && selectedCount < 3 ? (
-                        <>Continue anyway →</>
                     ) : (
                         <>Create Brief with {selectedCount} Keywords →</>
                     )}

@@ -1682,3 +1682,57 @@ button {
     width: 100%;
   }
 }
+
+/* ═══════════════════════════════════════════
+   KEYWORD SELECTION ENHANCEMENTS (PRIMARY)
+   ═══════════════════════════════════════════ */
+.keyword-item.primary {
+  border-color: var(--amber) !important;
+  background: var(--amber-soft) !important;
+  box-shadow: 0 0 0 1px var(--amber) inset;
+}
+
+.keyword-text-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sm);
+  margin-bottom: 4px;
+}
+
+.primary-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amber);
+  background: var(--white);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.primary-select-btn {
+  opacity: 0;
+  transition: all 0.2s ease;
+  font-size: 11px !important;
+  color: var(--amber) !important;
+  border: 1px solid transparent;
+}
+
+.primary-select-btn:hover {
+  background: var(--amber-soft) !important;
+  border-color: var(--amber) !important;
+}
+
+.keyword-item:hover .primary-select-btn {
+  opacity: 1;
+}
+
+.keyword-item.selected .primary-select-btn {
+  opacity: 1;
+}
+
+.keyword-item.primary .keyword-checkbox {
+  color: var(--amber);
+  font-size: 16px;
+}

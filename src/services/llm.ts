@@ -365,15 +365,16 @@ export async function generateKeywordsWithSeeds(
 
 export async function generateBrief(
     config: { title: string; language: string; modelId: string; apiKey: string },
-    selectedKeywords: string[],
+    primaryKeyword: string | null,
+    secondaryKeywords: string[],
     onChunk: (chunk: string) => void,
     signal?: AbortSignal
 ): Promise<void> {
     const model = getModelById(config.modelId);
     if (!model) throw createError('validation', 'Invalid model selected');
 
-    const systemPrompt = buildBriefPrompt(config.title, config.language, selectedKeywords);
-    const userMessage = `ARTICLE TITLE: "${config.title}"\nSELECTED KEYWORDS: ${selectedKeywords.join(', ')}\n\nTASK: Generate a high-authority content brief optimized for GEO. Headlines must flow logically and integrations must be natural. Follow the 7 pillars and avoid robotic text. Generate the complete brief now.`;
+    const systemPrompt = buildBriefPrompt(config.title, config.language, primaryKeyword, secondaryKeywords);
+    const userMessage = `ARTICLE TITLE: "${config.title}"\nPRIMARY KEYWORD: ${primaryKeyword || 'N/A'}\nSUPPORTING KEYWORDS: ${secondaryKeywords.join(', ')}\n\nTASK: Generate a high-authority content brief optimized for GEO. Headlines must flow logically and integrations must be natural. Follow the 70/30 weighting rule. Generate the complete brief now.`;
     const streamFn = getStreamFn(model.provider);
 
     await streamFn(config.apiKey, model.id, systemPrompt, userMessage, onChunk, signal);

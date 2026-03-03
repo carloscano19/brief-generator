@@ -99,8 +99,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     toggleKeyword: (index) =>
         set((s) => ({
             keywordProposals: s.keywordProposals.map((kw, i) =>
-                i === index ? { ...kw, selected: !kw.selected } : kw
+                i === index ? { ...kw, selected: !kw.selected, isPrimary: !kw.selected ? kw.isPrimary : false } : kw
             ),
+        })),
+
+    setPrimaryKeyword: (index) =>
+        set((s) => ({
+            keywordProposals: s.keywordProposals.map((kw, i) => ({
+                ...kw,
+                isPrimary: i === index,
+                selected: i === index ? true : kw.selected
+            })),
         })),
 
     selectAllKeywords: () =>
