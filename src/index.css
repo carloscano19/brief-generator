@@ -1689,7 +1689,7 @@ button {
 .keyword-item.primary {
   border-color: var(--amber) !important;
   background: var(--amber-soft) !important;
-  box-shadow: 0 0 0 1px var(--amber) inset;
+  box-shadow: 0 0 0 2px var(--amber) inset !important;
 }
 
 .keyword-text-row {
@@ -1704,41 +1704,52 @@ button {
   font-weight: 700;
   color: var(--amber);
   background: var(--white);
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: 4px;
   border: 1px solid var(--amber);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
+.keyword-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  min-width: 120px !important;
+}
+
 .primary-select-btn {
-  opacity: 0.5;
-  transition: all 0.2s ease;
-  font-size: 11px !important;
-  color: var(--amber) !important;
-  border: 1px solid var(--amber-soft) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  opacity: 1 !important;
+  /* FORCE VISIBILITY */
+  visibility: visible !important;
   background: var(--white) !important;
-  padding: 4px 10px !important;
-  border-radius: 6px !important;
-  box-shadow: var(--shadow-sm);
+  color: var(--amber) !important;
+  border: 2px solid var(--amber) !important;
+  padding: 10px 16px !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  box-shadow: var(--shadow-sm) !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  white-space: nowrap !important;
 }
 
 .primary-select-btn:hover {
-  opacity: 1;
-  background: var(--amber-soft) !important;
-  border-color: var(--amber) !important;
-  transform: translateY(-1px);
+  background: var(--amber) !important;
+  color: var(--white) !important;
+  transform: scale(1.05) translateY(-2px) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
-.keyword-item.selected .primary-select-btn {
-  opacity: 0.8;
-}
-
-.keyword-item:hover .primary-select-btn {
-  opacity: 1;
+.primary-select-btn:active {
+  transform: scale(0.95) !important;
 }
 
 .keyword-item.primary .keyword-checkbox {
-  color: var(--amber);
-  font-size: 16px;
+  color: var(--amber) !important;
+  font-size: 16px !important;
 }

@@ -7,7 +7,7 @@ import type { AppError } from '../../types';
 
 export const KeywordSelection: React.FC = () => {
     const {
-        keywordProposals, toggleKeyword, selectAllKeywords, deselectAllKeywords,
+        keywordProposals, toggleKeyword, setPrimaryKeyword, selectAllKeywords, deselectAllKeywords,
         config, prevStep,
         setBrief, setLoading, setStreaming, setError, setStep: goToStep,
         isLoading, error, addToHistory
@@ -28,10 +28,6 @@ export const KeywordSelection: React.FC = () => {
         abortRef.current = new AbortController();
         const primaryKw = keywordProposals.find(kw => kw.isPrimary);
         const secondaryKws = keywordProposals.filter(kw => kw.selected && !kw.isPrimary);
-
-        const selectedTexts = primaryKw
-            ? [primaryKw.text, ...secondaryKws.map(k => k.text)]
-            : secondaryKws.map(k => k.text);
 
         try {
             await generateBrief(
@@ -111,9 +107,10 @@ export const KeywordSelection: React.FC = () => {
                         <div className="keyword-checkbox">
                             {kw.isPrimary ? '⭐' : (kw.selected ? '✓' : '')}
                         </div>
-                        <div style={{ flex: 1 }}>
-                            <div className="keyword-text-row">
-                                <span className="keyword-text">{kw.text}</span>
+
+                        <div className="keyword-content" style={{ flex: 1, minWidth: 0 }}>
+                            <div className="keyword-text-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                <span className="keyword-text" style={{ fontWeight: 600, fontSize: '14px' }}>{kw.text}</span>
                                 {kw.isPrimary && <span className="primary-badge">PRIMARY (70%)</span>}
                             </div>
                             <div className="keyword-meta">
@@ -125,11 +122,12 @@ export const KeywordSelection: React.FC = () => {
                                 <div className="keyword-rationale">{kw.rationale}</div>
                             )}
                         </div>
-                        <div className="keyword-actions" onClick={(e) => e.stopPropagation()}>
+
+                        <div className="keyword-actions" onClick={(e) => e.stopPropagation()} style={{ flexShrink: 0, marginLeft: '16px' }}>
                             {!kw.isPrimary && (
                                 <button
-                                    className="btn btn-ghost primary-select-btn"
-                                    onClick={() => useAppStore.getState().setPrimaryKeyword(index)}
+                                    className="primary-select-btn"
+                                    onClick={() => setPrimaryKeyword(index)}
                                     title="Set as Primary Topic"
                                 >
                                     ⭐ Principal
