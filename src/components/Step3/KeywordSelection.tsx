@@ -124,7 +124,7 @@ export const KeywordSelection: React.FC = () => {
                         </div>
 
                         <div className="keyword-actions" onClick={(e) => e.stopPropagation()} style={{ flexShrink: 0, marginLeft: '16px' }}>
-                            {!kw.isPrimary && (
+                            {kw.selected && !kw.isPrimary && (
                                 <button
                                     className="primary-select-btn"
                                     onClick={() => setPrimaryKeyword(index)}
@@ -132,6 +132,11 @@ export const KeywordSelection: React.FC = () => {
                                 >
                                     ⭐ Principal
                                 </button>
+                            )}
+                            {kw.isPrimary && (
+                                <div className="primary-active-indicator">
+                                    🌟 ACTUAL PRINCIPAL
+                                </div>
                             )}
                         </div>
                     </div>

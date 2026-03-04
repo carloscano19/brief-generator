@@ -1,4 +1,4 @@
-import type { AppError, SeedSuggestions } from '../types';
+import type { AppError, SeedSuggestions, KeywordProposal } from '../types';
 import { buildKeywordPrompt, buildBriefPrompt, buildSeedSuggestionPrompt } from '../config/prompts';
 import { getModelById } from '../config/models';
 import { parseKeywordResponse } from '../utils/parser';
@@ -354,13 +354,34 @@ export async function generateKeywordsWithSeeds(
         callFn(config.apiKey, model.id, systemPrompt, userMessage, signal)
     );
 
+    let proposals: KeywordProposal[] = [];
     try {
-        return parseKeywordResponse(rawResponse);
+        proposals = parseKeywordResponse(rawResponse);
     } catch {
         const strictPrompt = systemPrompt + '\n\nCRITICAL: Respond ONLY with valid JSON. No markdown, no backticks, no text before or after the JSON object.';
         const retryResponse = await callFn(config.apiKey, model.id, strictPrompt, userMessage, signal);
-        return parseKeywordResponse(retryResponse);
+        proposals = parseKeywordResponse(retryResponse);
     }
+
+    // MANDATORY FIX: Ensure all seed keywords are in the list and selected
+    const seedProposals: KeywordProposal[] = seedKeywords.map(s => {
+        const existing = proposals.find(p => p.text.toLowerCase() === s.toLowerCase());
+        if (existing) {
+            return { ...existing, selected: true };
+        }
+        return {
+            text: s,
+            volume: 'medium',
+            rationale: 'Mandatory seed keyword provided by user.',
+            selected: true,
+            group: 'semantic'
+        };
+    });
+
+    // Remove duplicates of seeds from the rest of the list
+    const filteredProposals = proposals.filter(p => !seedKeywords.some(s => s.toLowerCase() === p.text.toLowerCase()));
+
+    return [...seedProposals, ...filteredProposals];
 }
 
 export async function generateBrief(
