@@ -36,14 +36,14 @@ export const KeywordSelection: React.FC = () => {
             setAhrefsError(null);
             try {
                 const texts = keywordProposals.map((k) => k.text);
-                const metricsData = await fetchKeywordMetrics(config.ahrefsApiKey, texts);
+                const metricsData = await fetchKeywordMetrics(config.ahrefsApiKey, texts, config.ahrefsCountry);
                 if (!cancelled) setAhrefsData(metricsData);
 
                 const seedsToQuery = useAppStore.getState().seedKeywords.slice(0, 3);
                 if (seedsToQuery.length > 0) {
                     const related: string[] = [];
                     for (const seed of seedsToQuery) {
-                        const r = await fetchRelatedKeywords(config.ahrefsApiKey, seed);
+                        const r = await fetchRelatedKeywords(config.ahrefsApiKey, seed, config.ahrefsCountry);
                         related.push(...r);
                     }
                     const unique = [...new Set(related)].filter(

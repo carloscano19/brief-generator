@@ -36,6 +36,7 @@ export type BriefConfig = {
   saveApiKey: boolean;
   ahrefsApiKey: string;
   saveAhrefsApiKey: boolean;
+  ahrefsCountry: string;
 };
 
 export type HistoryEntry = {

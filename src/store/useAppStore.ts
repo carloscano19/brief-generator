@@ -10,6 +10,7 @@ const DEFAULT_CONFIG: BriefConfig = {
     saveApiKey: false,
     ahrefsApiKey: '',
     saveAhrefsApiKey: false,
+    ahrefsCountry: 'us',
 };
 
 function loadHistory(): HistoryEntry[] {
@@ -51,6 +52,14 @@ function loadSavedAhrefsKey(): string {
     }
 }
 
+function loadSavedAhrefsCountry(): string {
+    try {
+        return localStorage.getItem('seo-brief:ahrefs-country') || 'us';
+    } catch {
+        return 'us';
+    }
+}
+
 export const useAppStore = create<AppState>((set, get) => ({
     currentStep: 1,
     config: {
@@ -58,6 +67,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         ...loadSavedConfig(),
         ahrefsApiKey: loadSavedAhrefsKey(),
         saveAhrefsApiKey: !!loadSavedAhrefsKey(),
+        ahrefsCountry: loadSavedAhrefsCountry(),
     },
     seedKeywords: [],
     suggestedSeedKeywords: null,
@@ -101,6 +111,11 @@ export const useAppStore = create<AppState>((set, get) => ({
             } else if (!newConfig.saveAhrefsApiKey) {
                 localStorage.removeItem('seo-brief:ahrefs-key');
             }
+
+            if (partial.ahrefsCountry) {
+                localStorage.setItem('seo-brief:ahrefs-country', newConfig.ahrefsCountry);
+            }
+
             return { config: newConfig };
         });
     },

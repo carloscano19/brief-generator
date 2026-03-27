@@ -53,7 +53,7 @@ export const BriefView: React.FC = () => {
             if (config.ahrefsApiKey && primaryKw && !serpInsight) {
                 setSerpLoading(true);
                 try {
-                    const insight = await fetchSerpInsight(config.ahrefsApiKey, primaryKw.text);
+                    const insight = await fetchSerpInsight(config.ahrefsApiKey, primaryKw.text, config.ahrefsCountry);
                     if (!cancelled) {
                         setSerpInsight(insight);
                         currentSerpInsight = insight;

@@ -200,6 +200,33 @@ export const ConfigForm: React.FC = () => {
                 {config.ahrefsApiKey && (
                     <div className="api-key-badge valid">✓ Ahrefs key entered</div>
                 )}
+
+                {/* Country Selector */}
+                <div style={{ marginTop: '16px', marginBottom: '8px' }}>
+                    <label className="form-label" style={{ fontSize: '11px', color: 'var(--ink-3)' }}>TARGET COUNTRY (AHREFS)</label>
+                    <select
+                        className="form-select"
+                        value={config.ahrefsCountry}
+                        onChange={(e) => updateConfig({ ahrefsCountry: e.target.value })}
+                        style={{ paddingTop: '8px', paddingBottom: '8px', fontSize: '13px' }}
+                    >
+                        <option value="us">United States (US)</option>
+                        <option value="gb">United Kingdom (GB)</option>
+                        <option value="es">Spain (ES)</option>
+                        <option value="mx">Mexico (MX)</option>
+                        <option value="ar">Argentina (AR)</option>
+                        <option value="co">Colombia (CO)</option>
+                        <option value="cl">Chile (CL)</option>
+                        <option value="pe">Peru (PE)</option>
+                        <option value="fr">France (FR)</option>
+                        <option value="de">Germany (DE)</option>
+                        <option value="it">Italy (IT)</option>
+                        <option value="br">Brazil (BR)</option>
+                        <option value="au">Australia (AU)</option>
+                        <option value="ca">Canada (CA)</option>
+                    </select>
+                </div>
+
                 <div className="save-key-row">
                     <input
                         type="checkbox"
