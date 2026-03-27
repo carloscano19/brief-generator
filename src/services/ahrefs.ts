@@ -1,6 +1,7 @@
 import type { AhrefsKeywordData, AhrefsSerpInsight } from '../types';
 
-const PROXY = 'https://corsproxy.io/?url=';
+const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+const PROXY = isLocal ? 'https://corsproxy.io/?url=' : '/brief-generator/ahrefs-proxy.php?url=';
 const AHREFS_BASE = 'https://api.ahrefs.com/v3';
 
 function proxied(url: string): string {
