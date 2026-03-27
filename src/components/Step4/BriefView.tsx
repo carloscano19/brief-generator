@@ -79,7 +79,8 @@ export const BriefView: React.FC = () => {
                     secondaryKws.map(k => k.text),
                     (chunk: string) => useAppStore.getState().appendBrief(chunk),
                     abortRef.current.signal,
-                    currentSerpInsight
+                    currentSerpInsight,
+                    useAppStore.getState().ahrefsData
                 );
 
                 const finalBrief = useAppStore.getState().brief;

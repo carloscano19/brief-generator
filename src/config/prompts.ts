@@ -110,10 +110,14 @@ Specific editorial tone guidelines. Include:
 - Source citation format: '[Statement with data]. (Source, Month Year).'
 - Focus on clarity and authority — avoid marketing language ('revolutionary', 'incredible', 'the best')
 
+## Top Organic Competitors
+List the top competing URLs that were analyzed for this brief:
+[Top competitor URLs will go here]
+
 ## Keywords Table
-Table with ALL selected keywords organized by group, with estimated volume and usage notes.
-| Keyword | Group | Est. Volume | Usage Notes |
-|---------|-------|-------------|-------------|
+Table with ALL selected keywords organized by group, with their exact Search Volume (if available) and usage notes.
+| Keyword | Group | Search Volume | Usage Notes |
+|---------|-------|---------------|-------------|
 
 ## LLM Optimization Notes
 Specific GEO 2026 instructions organized by citability filter activation:
@@ -206,11 +210,18 @@ export function buildBriefPrompt(
     language: string,
     primaryKeyword: string | null,
     secondaryKeywords: string[],
-    serpInsight?: { avgWords: number | null; dominantIntent: string | null; top3Urls: string[] } | null
+    serpInsight?: { avgWords: number | null; dominantIntent: string | null; top3Urls: string[] } | null,
+    ahrefsData?: Record<string, { sv: number | null; kd: number | null }> | null
 ) {
+    const formatKw = (k: string) => {
+        const sv = ahrefsData?.[k]?.sv;
+        if (typeof sv === 'number') return `"${k}" (Search Volume: ${sv})`;
+        return `"${k}"`;
+    };
+
     const keywordData = primaryKeyword
-        ? `- PRIMARY KEYWORD (70% weight): "${primaryKeyword}"\n- SUPPORTING KEYWORDS (30% weight): ${secondaryKeywords.length > 0 ? secondaryKeywords.map(k => `"${k}"`).join(', ') : 'None'}`
-        : `- SELECTED KEYWORDS: ${secondaryKeywords.join(', ')}`;
+        ? `- PRIMARY KEYWORD (70% weight): ${formatKw(primaryKeyword)}\n- SUPPORTING KEYWORDS (30% weight): ${secondaryKeywords.length > 0 ? secondaryKeywords.map(formatKw).join(', ') : 'None'}`
+        : `- SELECTED KEYWORDS: ${secondaryKeywords.map(formatKw).join(', ')}`;
 
     const structureInstructions = primaryKeyword
         ? `STRICT DOMINANCE RULE: The Primary Keyword "${primaryKeyword}" is the anchor. 
@@ -221,15 +232,21 @@ export function buildBriefPrompt(
 
     // Build Ahrefs SERP insight block
     let serpBlock = '';
-    if (serpInsight && (serpInsight.avgWords || serpInsight.dominantIntent)) {
-        serpBlock = `\n\nAHREFS SERP INSIGHT (real market data — use this to beat competitors):`;
-        if (serpInsight.avgWords) {
-            serpBlock += `\n- Top 3 competitors average ~${serpInsight.avgWords} words.`;
-            serpBlock += `\n- REQUIREMENT: Generate a structure MORE COMPLETE than this average. Aim for at least ${Math.round(serpInsight.avgWords * 1.25)} words worth of structured sections.`;
-        }
-        if (serpInsight.dominantIntent) {
-            serpBlock += `\n- Dominant search intent: ${serpInsight.dominantIntent}.`;
-            serpBlock += `\n- REQUIREMENT: Optimize every H2 section for "${serpInsight.dominantIntent}" intent.`;
+    if (serpInsight) {
+        if (serpInsight.avgWords || serpInsight.dominantIntent || serpInsight.top3Urls.length > 0) {
+            serpBlock = `\n\nAHREFS SERP INSIGHT (real market data — use this to beat competitors):`;
+            if (serpInsight.avgWords) {
+                serpBlock += `\n- Top competitors average ~${serpInsight.avgWords} words.`;
+                serpBlock += `\n- REQUIREMENT: Generate a structure MORE COMPLETE than this average. Aim for at least ${Math.round(serpInsight.avgWords * 1.25)} words.`;
+            }
+            if (serpInsight.dominantIntent) {
+                serpBlock += `\n- Dominant search intent: ${serpInsight.dominantIntent}.`;
+                serpBlock += `\n- REQUIREMENT: Optimize every H2 section for "${serpInsight.dominantIntent}" intent.`;
+            }
+            if (serpInsight.top3Urls.length > 0) {
+                serpBlock += `\n- ORGANIC COMPETITORS: ${serpInsight.top3Urls.join(', ')}.`;
+                serpBlock += `\n- REQUIREMENT: Explicitly list these URLs in the "Top Organic Competitors" section of the brief.`;
+            }
         }
     }
 
