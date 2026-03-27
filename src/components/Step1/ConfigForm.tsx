@@ -7,7 +7,9 @@ import { validateApiKey } from '../../utils/validators';
 export const ConfigForm: React.FC = () => {
     const { config, updateConfig, nextStep } = useAppStore();
     const [showKey, setShowKey] = useState(false);
+    const [showAhrefsKey, setShowAhrefsKey] = useState(false);
     const [showSaveModal, setShowSaveModal] = useState(false);
+    const [showAhrefsSaveModal, setShowAhrefsSaveModal] = useState(false);
 
     const model = getModelById(config.modelId);
     const keyValid = config.apiKey.length > 10 && validateApiKey(config.apiKey, model?.apiKeyPrefix || '');
@@ -22,7 +24,6 @@ export const ConfigForm: React.FC = () => {
     const handleModelChange = (modelId: string) => {
         const newModel = getModelById(modelId);
         if (newModel) {
-            // Load saved key for new provider if available
             let savedKey = '';
             try {
                 const keys = JSON.parse(localStorage.getItem('seo-brief:apikeys') || '{}');
@@ -42,12 +43,20 @@ export const ConfigForm: React.FC = () => {
             setShowSaveModal(true);
         } else {
             updateConfig({ saveApiKey: false });
-            // Remove saved key
             try {
                 const keys = JSON.parse(localStorage.getItem('seo-brief:apikeys') || '{}');
                 delete keys[config.provider];
                 localStorage.setItem('seo-brief:apikeys', JSON.stringify(keys));
             } catch { /* ignore */ }
+        }
+    };
+
+    const handleSaveAhrefsKeyToggle = (checked: boolean) => {
+        if (checked) {
+            setShowAhrefsSaveModal(true);
+        } else {
+            updateConfig({ saveAhrefsApiKey: false });
+            localStorage.removeItem('seo-brief:ahrefs-key');
         }
     };
 
@@ -118,7 +127,7 @@ export const ConfigForm: React.FC = () => {
                 </div>
             </div>
 
-            {/* API Key */}
+            {/* LLM API Key */}
             <div className="form-group">
                 <label className="form-label" htmlFor="apikey">
                     {model?.provider} API Key
@@ -162,6 +171,50 @@ export const ConfigForm: React.FC = () => {
                 </div>
             </div>
 
+            {/* Ahrefs API Key */}
+            <div className="form-group ahrefs-key-section">
+                <label className="form-label" htmlFor="ahrefs-apikey">
+                    Ahrefs API Key
+                    <span className="optional-badge">Optional</span>
+                </label>
+                <div className="api-key-wrapper">
+                    <input
+                        id="ahrefs-apikey"
+                        type={showAhrefsKey ? 'text' : 'password'}
+                        className="form-input"
+                        placeholder="Paste your Ahrefs API key for real SEO data"
+                        value={config.ahrefsApiKey}
+                        onChange={(e) => updateConfig({ ahrefsApiKey: e.target.value })}
+                        style={{ paddingRight: '48px', fontFamily: 'var(--font-mono)', fontSize: '13px' }}
+                        aria-describedby="ahrefs-apikey-hint"
+                    />
+                    <button
+                        className="api-key-toggle"
+                        onClick={() => setShowAhrefsKey(!showAhrefsKey)}
+                        aria-label={showAhrefsKey ? 'Hide Ahrefs API key' : 'Show Ahrefs API key'}
+                        type="button"
+                    >
+                        {showAhrefsKey ? '🙈' : '👁'}
+                    </button>
+                </div>
+                {config.ahrefsApiKey && (
+                    <div className="api-key-badge valid">✓ Ahrefs key entered</div>
+                )}
+                <div className="save-key-row">
+                    <input
+                        type="checkbox"
+                        id="save-ahrefs-key"
+                        checked={config.saveAhrefsApiKey}
+                        onChange={(e) => handleSaveAhrefsKeyToggle(e.target.checked)}
+                    />
+                    <label htmlFor="save-ahrefs-key">Save API key in browser storage</label>
+                </div>
+                <div className="form-hint ahrefs-feature-hint" id="ahrefs-apikey-hint">
+                    🔍 Enables real Search Volume (SV) and Keyword Difficulty (KD) data in Step 3, plus SERP insights to enrich the final brief.
+                    Without this key, the app uses AI-estimated volume data.
+                </div>
+            </div>
+
             {/* CTA */}
             <div className="step-footer">
                 <div></div>
@@ -175,7 +228,7 @@ export const ConfigForm: React.FC = () => {
                 </button>
             </div>
 
-            {/* Save Modal */}
+            {/* Save LLM Key Modal */}
             {showSaveModal && (
                 <div className="modal-overlay" onClick={() => setShowSaveModal(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -195,6 +248,35 @@ export const ConfigForm: React.FC = () => {
                                 onClick={() => {
                                     updateConfig({ saveApiKey: true });
                                     setShowSaveModal(false);
+                                }}
+                            >
+                                I understand, save anyway
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Save Ahrefs Key Modal */}
+            {showAhrefsSaveModal && (
+                <div className="modal-overlay" onClick={() => setShowAhrefsSaveModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="modal-title">⚠️ Save Ahrefs API Key?</h3>
+                        <div className="modal-body">
+                            Your Ahrefs API key will be saved in this browser's local storage.
+                            Anyone with access to this device could potentially access it.
+                            <br /><br />
+                            <strong>Do not enable this on shared or public devices.</strong>
+                        </div>
+                        <div className="modal-actions">
+                            <button className="btn btn-secondary" onClick={() => setShowAhrefsSaveModal(false)}>
+                                Cancel
+                            </button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => {
+                                    updateConfig({ saveAhrefsApiKey: true });
+                                    setShowAhrefsSaveModal(false);
                                 }}
                             >
                                 I understand, save anyway

@@ -389,12 +389,13 @@ export async function generateBrief(
     primaryKeyword: string | null,
     secondaryKeywords: string[],
     onChunk: (chunk: string) => void,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    serpInsight?: { avgWords: number | null; dominantIntent: string | null; top3Urls: string[] } | null
 ): Promise<void> {
     const model = getModelById(config.modelId);
     if (!model) throw createError('validation', 'Invalid model selected');
 
-    const systemPrompt = buildBriefPrompt(config.title, config.language, primaryKeyword, secondaryKeywords);
+    const systemPrompt = buildBriefPrompt(config.title, config.language, primaryKeyword, secondaryKeywords, serpInsight);
     const userMessage = `ARTICLE TITLE: "${config.title}"
 {PRIMARY_KEYWORD_INFO}
 {SUPPORTING_KEYWORDS_INFO}

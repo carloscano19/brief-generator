@@ -15,6 +15,18 @@ export type KeywordProposal = {
   isPrimary?: boolean;
 };
 
+export type AhrefsKeywordData = {
+  sv: number | null;
+  kd: number | null;
+  country: string;
+};
+
+export type AhrefsSerpInsight = {
+  avgWords: number | null;
+  dominantIntent: string | null;
+  top3Urls: string[];
+};
+
 export type BriefConfig = {
   title: string;
   language: string;
@@ -22,6 +34,8 @@ export type BriefConfig = {
   provider: string;
   apiKey: string;
   saveApiKey: boolean;
+  ahrefsApiKey: string;
+  saveAhrefsApiKey: boolean;
 };
 
 export type HistoryEntry = {
@@ -57,6 +71,13 @@ export type AppState = {
   error: AppError | null;
   showHistory: boolean;
 
+  // Ahrefs state
+  ahrefsData: Record<string, AhrefsKeywordData>;
+  ahrefsRelated: string[];
+  serpInsight: AhrefsSerpInsight | null;
+  isLoadingAhrefs: boolean;
+  ahrefsError: string | null;
+
   // Actions
   setStep: (step: number) => void;
   nextStep: () => void;
@@ -81,6 +102,13 @@ export type AppState = {
   loadFromHistory: (id: string) => void;
   setShowHistory: (show: boolean) => void;
   resetSession: () => void;
+
+  // Ahrefs actions
+  setAhrefsData: (data: Record<string, AhrefsKeywordData>) => void;
+  setAhrefsRelated: (related: string[]) => void;
+  setSerpInsight: (insight: AhrefsSerpInsight | null) => void;
+  setLoadingAhrefs: (loading: boolean) => void;
+  setAhrefsError: (error: string | null) => void;
 };
 
 export const VOLUME_LABELS: Record<string, string> = {

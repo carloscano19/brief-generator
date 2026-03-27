@@ -201,7 +201,13 @@ export function buildKeywordPrompt(
         .replace('{SEED_KEYWORDS}', seedKeywords.join(', '));
 }
 
-export function buildBriefPrompt(title: string, language: string, primaryKeyword: string | null, secondaryKeywords: string[]) {
+export function buildBriefPrompt(
+    title: string,
+    language: string,
+    primaryKeyword: string | null,
+    secondaryKeywords: string[],
+    serpInsight?: { avgWords: number | null; dominantIntent: string | null; top3Urls: string[] } | null
+) {
     const keywordData = primaryKeyword
         ? `- PRIMARY KEYWORD (70% weight): "${primaryKeyword}"\n- SUPPORTING KEYWORDS (30% weight): ${secondaryKeywords.length > 0 ? secondaryKeywords.map(k => `"${k}"`).join(', ') : 'None'}`
         : `- SELECTED KEYWORDS: ${secondaryKeywords.join(', ')}`;
@@ -213,9 +219,23 @@ export function buildBriefPrompt(title: string, language: string, primaryKeyword
 3. Every H2 must be a direct question that flows from the H1 titled "${title}" but focuses on the ANGLE of "${primaryKeyword}".`
         : `Complete heading scheme for the title "${title}" using the selected keywords. Focus on a logical narrative.`;
 
+    // Build Ahrefs SERP insight block
+    let serpBlock = '';
+    if (serpInsight && (serpInsight.avgWords || serpInsight.dominantIntent)) {
+        serpBlock = `\n\nAHREFS SERP INSIGHT (real market data — use this to beat competitors):`;
+        if (serpInsight.avgWords) {
+            serpBlock += `\n- Top 3 competitors average ~${serpInsight.avgWords} words.`;
+            serpBlock += `\n- REQUIREMENT: Generate a structure MORE COMPLETE than this average. Aim for at least ${Math.round(serpInsight.avgWords * 1.25)} words worth of structured sections.`;
+        }
+        if (serpInsight.dominantIntent) {
+            serpBlock += `\n- Dominant search intent: ${serpInsight.dominantIntent}.`;
+            serpBlock += `\n- REQUIREMENT: Optimize every H2 section for "${serpInsight.dominantIntent}" intent.`;
+        }
+    }
+
     return BRIEF_GENERATION_PROMPT
         .replace(/{TITLE}/g, title)
         .replace(/{LANGUAGE}/g, language)
-        .replace('{KEYWORD_DATA}', keywordData)
+        .replace('{KEYWORD_DATA}', keywordData + serpBlock)
         .replace('{STRUCTURE_INSTRUCTIONS}', structureInstructions);
 }

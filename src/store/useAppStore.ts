@@ -8,6 +8,8 @@ const DEFAULT_CONFIG: BriefConfig = {
     provider: 'OpenAI',
     apiKey: '',
     saveApiKey: false,
+    ahrefsApiKey: '',
+    saveAhrefsApiKey: false,
 };
 
 function loadHistory(): HistoryEntry[] {
@@ -41,9 +43,22 @@ function loadSavedApiKeys(): Record<string, string> {
     }
 }
 
+function loadSavedAhrefsKey(): string {
+    try {
+        return localStorage.getItem('seo-brief:ahrefs-key') || '';
+    } catch {
+        return '';
+    }
+}
+
 export const useAppStore = create<AppState>((set, get) => ({
     currentStep: 1,
-    config: { ...DEFAULT_CONFIG, ...loadSavedConfig() },
+    config: {
+        ...DEFAULT_CONFIG,
+        ...loadSavedConfig(),
+        ahrefsApiKey: loadSavedAhrefsKey(),
+        saveAhrefsApiKey: !!loadSavedAhrefsKey(),
+    },
     seedKeywords: [],
     suggestedSeedKeywords: null,
     keywordProposals: [],
@@ -53,6 +68,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     isStreaming: false,
     error: null,
     showHistory: false,
+
+    // Ahrefs state
+    ahrefsData: {},
+    ahrefsRelated: [],
+    serpInsight: null,
+    isLoadingAhrefs: false,
+    ahrefsError: null,
 
     setStep: (step) => set({ currentStep: step, error: null }),
     nextStep: () => set((s) => ({ currentStep: Math.min(s.currentStep + 1, 4), error: null })),
@@ -67,11 +89,17 @@ export const useAppStore = create<AppState>((set, get) => ({
                 modelId: newConfig.modelId,
                 provider: newConfig.provider,
             }));
-            // handle API key saving
+            // handle LLM API key saving
             if (newConfig.saveApiKey && newConfig.apiKey) {
                 const keys = loadSavedApiKeys();
                 keys[newConfig.provider] = newConfig.apiKey;
                 localStorage.setItem('seo-brief:apikeys', JSON.stringify(keys));
+            }
+            // handle Ahrefs API key saving
+            if (newConfig.saveAhrefsApiKey && newConfig.ahrefsApiKey) {
+                localStorage.setItem('seo-brief:ahrefs-key', newConfig.ahrefsApiKey);
+            } else if (!newConfig.saveAhrefsApiKey) {
+                localStorage.removeItem('seo-brief:ahrefs-key');
             }
             return { config: newConfig };
         });
@@ -131,6 +159,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     setStreaming: (isStreaming) => set({ isStreaming }),
     setError: (error) => set({ error }),
 
+    // Ahrefs actions
+    setAhrefsData: (ahrefsData) => set({ ahrefsData }),
+    setAhrefsRelated: (ahrefsRelated) => set({ ahrefsRelated }),
+    setSerpInsight: (serpInsight) => set({ serpInsight }),
+    setLoadingAhrefs: (isLoadingAhrefs) => set({ isLoadingAhrefs }),
+    setAhrefsError: (ahrefsError) => set({ ahrefsError }),
+
     addToHistory: (entry) =>
         set((s) => {
             let newHistory = [entry, ...s.history];
@@ -169,7 +204,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     resetSession: () =>
         set({
             currentStep: 1,
-            config: { ...DEFAULT_CONFIG, ...loadSavedConfig() },
+            config: {
+                ...DEFAULT_CONFIG,
+                ...loadSavedConfig(),
+                ahrefsApiKey: loadSavedAhrefsKey(),
+                saveAhrefsApiKey: !!loadSavedAhrefsKey(),
+            },
             seedKeywords: [],
             suggestedSeedKeywords: null,
             keywordProposals: [],
@@ -177,5 +217,10 @@ export const useAppStore = create<AppState>((set, get) => ({
             isLoading: false,
             isStreaming: false,
             error: null,
+            ahrefsData: {},
+            ahrefsRelated: [],
+            serpInsight: null,
+            isLoadingAhrefs: false,
+            ahrefsError: null,
         }),
 }));
