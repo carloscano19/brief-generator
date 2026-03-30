@@ -50,7 +50,7 @@ export async function fetchKeywordMetrics(
         await Promise.all(
             batch.map(async (kw) => {
                 try {
-                    const url = `${AHREFS_BASE}/keywords-explorer/overview?keyword=${encodeURIComponent(kw)}&country=${country}&select=keyword,volume,difficulty`;
+                    const url = `${AHREFS_BASE}/keywords-explorer/overview?keywords=${encodeURIComponent(kw)}&country=${country}&select=keyword,volume,difficulty`;
                     const data = await ahrefsFetch(apiKey, url) as {
                         keywords?: Array<{ keyword: string; volume: number | null; difficulty: number | null }>;
                     };
@@ -79,7 +79,7 @@ export async function fetchRelatedKeywords(
     country = 'us'
 ): Promise<string[]> {
     try {
-        const url = `${AHREFS_BASE}/keywords-explorer/matching-terms?keyword=${encodeURIComponent(seed)}&country=${country}&limit=10&order_by=volume%3Adesc&select=keyword,volume`;
+        const url = `${AHREFS_BASE}/keywords-explorer/matching-terms?keywords=${encodeURIComponent(seed)}&country=${country}&limit=10&order_by=volume%3Adesc&select=keyword,volume`;
         const data = await ahrefsFetch(apiKey, url) as {
             keywords?: Array<{ keyword: string; volume: number | null }>;
         };

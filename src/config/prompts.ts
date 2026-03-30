@@ -111,7 +111,7 @@ Specific editorial tone guidelines. Include:
 - Focus on clarity and authority — avoid marketing language ('revolutionary', 'incredible', 'the best')
 
 ## Top Organic Competitors
-List the top competing URLs that were analyzed for this brief:
+List the top competing URLs that were analyzed for the primary keyword:
 [Top competitor URLs will go here]
 
 ## Keywords Table
@@ -244,8 +244,8 @@ export function buildBriefPrompt(
                 serpBlock += `\n- REQUIREMENT: Optimize every H2 section for "${serpInsight.dominantIntent}" intent.`;
             }
             if (serpInsight.top3Urls.length > 0) {
-                serpBlock += `\n- ORGANIC COMPETITORS: ${serpInsight.top3Urls.join(', ')}.`;
-                serpBlock += `\n- REQUIREMENT: Explicitly list these URLs in the "Top Organic Competitors" section of the brief.`;
+                serpBlock += `\n- ORGANIC COMPETITORS FOR PRIMARY KEYWORD "${primaryKeyword}": ${serpInsight.top3Urls.join(', ')}.`;
+                serpBlock += `\n- REQUIREMENT: Explicitly list these URLs in the "Top Organic Competitors" section of the brief. State clearly that these are the top competitors for "${primaryKeyword}".`;
             }
         }
     }
