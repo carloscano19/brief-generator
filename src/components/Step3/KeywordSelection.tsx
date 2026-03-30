@@ -41,15 +41,22 @@ export const KeywordSelection: React.FC = () => {
 
                 const seedsToQuery = useAppStore.getState().seedKeywords.slice(0, 3);
                 if (seedsToQuery.length > 0) {
-                    const related: string[] = [];
+                    const aggregated = { matching: [] as string[], related: [] as string[], suggestions: [] as string[] };
                     for (const seed of seedsToQuery) {
                         const r = await fetchRelatedKeywords(config.ahrefsApiKey, seed, config.ahrefsCountry);
-                        related.push(...r);
+                        aggregated.matching.push(...r.matching);
+                        aggregated.related.push(...r.related);
+                        aggregated.suggestions.push(...r.suggestions);
                     }
-                    const unique = [...new Set(related)].filter(
-                        (r) => !keywordProposals.some((k) => k.text.toLowerCase() === r.toLowerCase())
-                    );
-                    if (!cancelled) setAhrefsRelated(unique.slice(0, 12));
+                    
+                    const filterUnique = (arr: string[]) => 
+                        [...new Set(arr)].filter(t => !keywordProposals.some(k => k.text.toLowerCase() === t.toLowerCase())).slice(0, 10);
+
+                    if (!cancelled) setAhrefsRelated({
+                        matching: filterUnique(aggregated.matching),
+                        related: filterUnique(aggregated.related),
+                        suggestions: filterUnique(aggregated.suggestions),
+                    });
                 }
             } catch (err) {
                 if (!cancelled) {
@@ -72,22 +79,32 @@ export const KeywordSelection: React.FC = () => {
     // ─── Apply filters ──────────────────────────────────────────────────────────
     const visibleProposals = (() => {
         let list = keywordProposals.map((kw, idx) => ({ kw, idx }));
-        if (filterMode === 'easy-wins' && hasAhrefsData) {
+        
+        if (filterMode === 'easy-wins') {
             list = list.filter(({ kw }) => {
                 const d = ahrefsData[kw.text];
-                if (!d) return true;
-                return d.kd === null || d.kd <= 20;
+                // Only include if we have real KD data and it's <= 20
+                return d && d.kd !== null && d.kd <= 20;
             });
-        }
-        if (filterMode === 'high-traffic' && hasAhrefsData) {
+        } else if (filterMode === 'high-traffic') {
             list = [...list].sort((a, b) => {
                 const svA = ahrefsData[a.kw.text]?.sv ?? -1;
                 const svB = ahrefsData[b.kw.text]?.sv ?? -1;
-                return svB - svA;
+                if (svA === -1 && svB === -1) return 0;
+                return svB - svA; // Volume Descending
             });
         }
+        
         return list;
     })();
+    // ─── KD badge helper ───────────────────────────────────────────────────────
+    const kdClass = (kd: number | null) => {
+        if (kd === null) return '';
+        if (kd <= 15) return 'kd-very-easy';
+        if (kd <= 30) return 'kd-easy';
+        if (kd <= 50) return 'kd-medium';
+        return 'kd-hard';
+    };
 
     // ─── Navigate to Step 4 — BriefView handles generation ────────────────────
     const handleGoToBrief = () => {
@@ -96,14 +113,6 @@ export const KeywordSelection: React.FC = () => {
         setBrief('');
         setSerpInsight(null); // reset so BriefView re-fetches SERP
         goToStep(4);
-    };
-
-    // ─── KD badge helper ───────────────────────────────────────────────────────
-    const kdClass = (kd: number | null) => {
-        if (kd === null) return '';
-        if (kd <= 20) return 'kd-easy';
-        if (kd <= 50) return 'kd-medium';
-        return 'kd-hard';
     };
 
     const formatSv = (sv: number | null) => {
@@ -271,33 +280,60 @@ export const KeywordSelection: React.FC = () => {
             </div>
 
             {/* Ahrefs Suggestions */}
-            {ahrefsRelated.length > 0 && !isLoadingAhrefs && (
+            {ahrefsRelated && !isLoadingAhrefs && (
                 <div className="ahrefs-suggestions">
                     <button
                         className="ahrefs-suggestions-toggle"
                         onClick={() => setShowSuggestions(!showSuggestions)}
                     >
-                        <span>📊 Ahrefs Related Suggestions ({ahrefsRelated.length})</span>
+                        <span>📊 Ahrefs Keyword Ideas</span>
                         <span>{showSuggestions ? '▲' : '▼'}</span>
                     </button>
                     {showSuggestions && (
-                        <div className="ahrefs-suggestions-list">
+                        <div className="ahrefs-suggestions-content">
                             <p className="ahrefs-suggestions-hint">
-                                These terms have real search volume detected by Ahrefs. Click + to add as seed keywords for expanded proposals.
+                                Real search volume data from Ahrefs. Click + to add as seeds for new proposals.
                             </p>
-                            <div className="ahrefs-suggestions-grid">
-                                {ahrefsRelated.map((term) => (
-                                    <div key={term} className="ahrefs-suggestion-item">
-                                        <span className="ahrefs-suggestion-text">{term}</span>
-                                        <button
-                                            className="ahrefs-suggestion-add"
-                                            onClick={() => addSeedKeyword(term)}
-                                            title="Add as seed keyword"
-                                        >
-                                            +
-                                        </button>
+                            
+                            <div className="ahrefs-categories-grid">
+                                {/* Matching Terms */}
+                                <div className="ahrefs-category">
+                                    <h4>Matching Terms</h4>
+                                    <div className="ahrefs-suggestions-list">
+                                        {ahrefsRelated.matching.length > 0 ? ahrefsRelated.matching.map((term) => (
+                                            <div key={term} className="ahrefs-suggestion-item">
+                                                <span className="ahrefs-suggestion-text">{term}</span>
+                                                <button className="ahrefs-suggestion-add" onClick={() => addSeedKeyword(term)}>+</button>
+                                            </div>
+                                        )) : <p className="no-data">No matching terms</p>}
                                     </div>
-                                ))}
+                                </div>
+
+                                {/* Related Terms */}
+                                <div className="ahrefs-category">
+                                    <h4>Related Terms</h4>
+                                    <div className="ahrefs-suggestions-list">
+                                        {ahrefsRelated.related.length > 0 ? ahrefsRelated.related.map((term) => (
+                                            <div key={term} className="ahrefs-suggestion-item">
+                                                <span className="ahrefs-suggestion-text">{term}</span>
+                                                <button className="ahrefs-suggestion-add" onClick={() => addSeedKeyword(term)}>+</button>
+                                            </div>
+                                        )) : <p className="no-data">No related terms</p>}
+                                    </div>
+                                </div>
+
+                                {/* Search Suggestions */}
+                                <div className="ahrefs-category">
+                                    <h4>Search Suggestions</h4>
+                                    <div className="ahrefs-suggestions-list">
+                                        {ahrefsRelated.suggestions.length > 0 ? ahrefsRelated.suggestions.map((term) => (
+                                            <div key={term} className="ahrefs-suggestion-item">
+                                                <span className="ahrefs-suggestion-text">{term}</span>
+                                                <button className="ahrefs-suggestion-add" onClick={() => addSeedKeyword(term)}>+</button>
+                                            </div>
+                                        )) : <p className="no-data">No suggestions</p>}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

@@ -74,7 +74,7 @@ export type AppState = {
 
   // Ahrefs state
   ahrefsData: Record<string, AhrefsKeywordData>;
-  ahrefsRelated: string[];
+  ahrefsRelated: { matching: string[]; related: string[]; suggestions: string[] } | null;
   serpInsight: AhrefsSerpInsight | null;
   isLoadingAhrefs: boolean;
   ahrefsError: string | null;
@@ -106,7 +106,7 @@ export type AppState = {
 
   // Ahrefs actions
   setAhrefsData: (data: Record<string, AhrefsKeywordData>) => void;
-  setAhrefsRelated: (related: string[]) => void;
+  setAhrefsRelated: (related: { matching: string[]; related: string[]; suggestions: string[] } | null) => void;
   setSerpInsight: (insight: AhrefsSerpInsight | null) => void;
   setLoadingAhrefs: (loading: boolean) => void;
   setAhrefsError: (error: string | null) => void;

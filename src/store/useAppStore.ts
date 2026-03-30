@@ -81,7 +81,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     // Ahrefs state
     ahrefsData: {},
-    ahrefsRelated: [],
+    ahrefsRelated: null,
     serpInsight: null,
     isLoadingAhrefs: false,
     ahrefsError: null,
@@ -233,7 +233,7 @@ export const useAppStore = create<AppState>((set, get) => ({
             isStreaming: false,
             error: null,
             ahrefsData: {},
-            ahrefsRelated: [],
+            ahrefsRelated: null,
             serpInsight: null,
             isLoadingAhrefs: false,
             ahrefsError: null,

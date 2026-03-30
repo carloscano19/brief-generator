@@ -42,55 +42,68 @@ export async function fetchKeywordMetrics(
 ): Promise<Record<string, AhrefsKeywordData>> {
     const result: Record<string, AhrefsKeywordData> = {};
 
-    // Ahrefs accepts up to one keyword per request on this endpoint for v3.
-    // We batch requests but limit concurrency to 3 to avoid rate limiting.
-    const batchSize = 3;
+    // Ahrefs v3 accepts a comma-separated list of keywords. 
+    // We batch requests up to 50 keywords at once to heavily reduce API hits.
+    const batchSize = 50;
     for (let i = 0; i < keywords.length; i += batchSize) {
         const batch = keywords.slice(i, i + batchSize);
-        await Promise.all(
-            batch.map(async (kw) => {
-                try {
-                    const url = `${AHREFS_BASE}/keywords-explorer/overview?keywords=${encodeURIComponent(kw)}&country=${country}&select=keyword,volume,difficulty`;
-                    const data = await ahrefsFetch(apiKey, url) as {
-                        keywords?: Array<{ keyword: string; volume: number | null; difficulty: number | null }>;
-                    };
-                    const entry = data?.keywords?.[0];
-                    result[kw] = {
-                        sv: entry?.volume ?? null,
-                        kd: entry?.difficulty ?? null,
+        try {
+            const url = `${AHREFS_BASE}/keywords-explorer/overview?keywords=${encodeURIComponent(batch.join(','))}&country=${country}&select=keyword,volume,difficulty&_cb=${Date.now()}`;
+            const data = await ahrefsFetch(apiKey, url) as {
+                keywords?: Array<{ keyword: string; volume: number | null; difficulty: number | null }>;
+            };
+            
+            // pre-fill with nulls in case API omits some
+            batch.forEach(kw => { result[kw] = { sv: null, kd: null, country }; });
+
+            if (data?.keywords) {
+                data.keywords.forEach(entry => {
+                    result[entry.keyword] = {
+                        sv: entry.volume ?? null,
+                        kd: entry.difficulty ?? null,
                         country,
                     };
-                } catch (err) {
-                    if (err instanceof AhrefsAuthError) throw err; // propagate auth errors
-                    console.error(`Ahrefs fetchKeywordMetrics failed for: ${kw}`, err);
-                    result[kw] = { sv: null, kd: null, country };
-                }
-            })
-        );
+                });
+            }
+        } catch (err) {
+            if (err instanceof AhrefsAuthError) throw err; // propagate auth errors
+            console.error(`Ahrefs fetchKeywordMetrics failed for batch`, err);
+            batch.forEach(kw => { result[kw] = { sv: null, kd: null, country }; });
+        }
     }
     return result;
 }
 
 // ─── Related Keywords ──────────────────────────────────────────────────────────
-// Fetches related/matching terms for a seed keyword, sorted by volume.
+// Fetches Matching, Related, and Search Suggestions for a seed keyword.
 export async function fetchRelatedKeywords(
     apiKey: string,
     seed: string,
     country = 'us'
-): Promise<string[]> {
+): Promise<{ matching: string[]; related: string[]; suggestions: string[] }> {
+    const cb = `&_cb=${Date.now()}`;
+    const baseParams = `?keywords=${encodeURIComponent(seed)}&country=${country}&limit=10&select=keyword${cb}`;
+
     try {
-        const url = `${AHREFS_BASE}/keywords-explorer/matching-terms?keywords=${encodeURIComponent(seed)}&country=${country}&limit=10&order_by=volume%3Adesc&select=keyword,volume`;
-        const data = await ahrefsFetch(apiKey, url) as {
-            keywords?: Array<{ keyword: string; volume: number | null }>;
+        const [matchingData, relatedData, suggestionsData] = await Promise.all([
+            ahrefsFetch(apiKey, `${AHREFS_BASE}/keywords-explorer/matching-terms${baseParams}&order_by=volume%3Adesc`),
+            ahrefsFetch(apiKey, `${AHREFS_BASE}/keywords-explorer/related-terms${baseParams}`),
+            ahrefsFetch(apiKey, `${AHREFS_BASE}/keywords-explorer/search-suggestions${baseParams}`)
+        ]) as [any, any, any];
+
+        const mapKw = (data: any) => (data?.keywords ?? [])
+            .map((k: any) => k.keyword)
+            .filter((k: string) => k.toLowerCase() !== seed.toLowerCase());
+
+        return {
+            matching: mapKw(matchingData),
+            related: mapKw(relatedData),
+            suggestions: mapKw(suggestionsData),
         };
-        return (data?.keywords ?? [])
-            .filter((k) => k.keyword.toLowerCase() !== seed.toLowerCase())
-            .map((k) => k.keyword)
-            .slice(0, 10);
     } catch (err) {
         if (err instanceof AhrefsAuthError) throw err;
         console.error(`Ahrefs fetchRelatedKeywords failed for: ${seed}`, err);
-        return [];
+        return { matching: [], related: [], suggestions: [] };
     }
 }
 
@@ -102,7 +115,7 @@ export async function fetchSerpInsight(
     country = 'us'
 ): Promise<AhrefsSerpInsight> {
     try {
-        const url = `${AHREFS_BASE}/serp-overview/by-keyword?keyword=${encodeURIComponent(keyword)}&country=${country}&select=title,url,word_count,type`;
+        const url = `${AHREFS_BASE}/serp-overview/by-keyword?keywords=${encodeURIComponent(keyword)}&country=${country}&select=title,url,word_count,type&_cb=${Date.now()}`;
         const data = await ahrefsFetch(apiKey, url) as {
             serp?: Array<{
                 title?: string;
